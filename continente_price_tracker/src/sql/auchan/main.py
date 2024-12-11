@@ -1,9 +1,9 @@
 import pandas as pd
 from auchan.preprocessing import *
 
-def preprocess_and_insert_data_auchan(parquet_file, db_interface):
+def preprocess_and_insert_data_auchan(df, db_interface):
     # Step 1: Read data from the Parquet file
-    df = pd.read_parquet(parquet_file)
+    # df = pd.read_parquet(parquet_file)
     
     # Drop duplicates for the same product_id, source and timestamp
     df = df.drop_duplicates(subset=['product_id', 'source', 'timestamp'])
@@ -27,7 +27,7 @@ def preprocess_and_insert_data_auchan(parquet_file, db_interface):
     
     # Insert category hierarchy and retrieve category_ids
     print(len(df_category))
-    category_ids = db_interface.bulk_insert_into_category_hierarchy_table(df_category)
+    category_ids = db_interface.bulk_insert_into_category_hierarchy_table_with_defaults(df_category)
     
     # Ensure the product_id_pk is mapped correctly in the product_category dataframe
     df_product_category['product_id_pk'] = product_ids_pk

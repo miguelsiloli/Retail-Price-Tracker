@@ -1,1 +1,0 @@
-from main import preprocess_and_insert_data_auchan

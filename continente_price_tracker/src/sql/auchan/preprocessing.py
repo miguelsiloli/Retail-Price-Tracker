@@ -3,9 +3,12 @@ from datetime import datetime
 import time
 
 
-def to_unix_time(dt_str, fmt="%Y%m%d"):
+def to_unix_time(dt_str):
     """Convert a datetime string to Unix time."""
-    return int(time.mktime(datetime.strptime(str(dt_str), fmt).timetuple()))
+    try:
+        return int(time.mktime(datetime.strptime(str(dt_str), "%Y%m%d").timetuple()))
+    except:
+        return int(time.mktime(datetime.strptime(str(dt_str), "%Y-%m-%d").timetuple()))
 
 
 def auchan_product_table(df):
