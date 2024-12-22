@@ -34,7 +34,7 @@ jobs:
           echo "USER=${{ secrets.USER }}" >> .env
           echo "PASSWORD=${{ secrets.PASSWORD }}" >> .env
           echo "HOST=${{ secrets.HOST }}" >> .env
-          
+
           echo "SUPABASE_ACCESS_KEY_ID=${{ secrets.SUPABASE_ACCESS_KEY_ID }}" >> continente_price_tracker/.env
           echo "SUPABASE_SECRET_ACCESS_KEY=${{ secrets.SUPABASE_SECRET_ACCESS_KEY }}" >> continente_price_tracker/.env
           echo "SUPABASE_ENDPOINT=${{ secrets.SUPABASE_ENDPOINT }}" >> continente_price_tracker/.env
@@ -45,7 +45,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB }}
         run: |
-          python continente_price_tracker/src/main.py
+          python continente_price_tracker/src/main.py || true 
+          python continente_price_tracker/src/sql/main.py
 
       - name: Commit and push CSV files
         if: success()
