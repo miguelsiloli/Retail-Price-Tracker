@@ -1,9 +1,9 @@
-name: Data Pipeline
+name: Data Pipeline 2
 
 on:
-  workflow_dispatch:  # Allows manual triggering from GitHub UI
+  workflow_dispatch: # Allows manual triggering from GitHub UI
   schedule:
-    - cron: '0 0 * * *'  # Runs daily at midnight UTC
+    - cron: '0 0 * * *' # Runs daily at midnight UTC
 
 jobs:
   run-data-pipeline:
@@ -16,12 +16,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          ref: integration-branch  # Specify the integration branch (works even when triggered on a different branch)
+          ref: integration-branch  # Specify the integration branch
 
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.10.6'  # Use the version compatible with your code
+          python-version: '3.10.6' # Use the version compatible with your code
 
       - name: Install dependencies
         run: |
@@ -30,6 +30,11 @@ jobs:
 
       - name: Create .env file
         run: |
+          echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" >> .env
+          echo "USER=${{ secrets.USER }}" >> .env
+          echo "PASSWORD=${{ secrets.PASSWORD }}" >> .env
+          echo "HOST=${{ secrets.HOST }}" >> .env
+
           echo "SUPABASE_ACCESS_KEY_ID=${{ secrets.SUPABASE_ACCESS_KEY_ID }}" >> continente_price_tracker/.env
           echo "SUPABASE_SECRET_ACCESS_KEY=${{ secrets.SUPABASE_SECRET_ACCESS_KEY }}" >> continente_price_tracker/.env
           echo "SUPABASE_ENDPOINT=${{ secrets.SUPABASE_ENDPOINT }}" >> continente_price_tracker/.env
@@ -40,7 +45,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB }}
         run: |
-          python continente_price_tracker/src/main.py
+          python continente_price_tracker/src/main.py || true 
+          python continente_price_tracker/src/sql/main.py
 
       - name: Commit and push CSV files
         if: success()
