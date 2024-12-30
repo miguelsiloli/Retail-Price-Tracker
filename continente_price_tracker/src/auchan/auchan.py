@@ -6,7 +6,7 @@ import pandas as pd
 import time
 import json
 from datetime import datetime
-from utils import retry_on_failure
+from utils import retry_on_failure, upload_csv_to_supabase_s3
 from logger import setup_logger
 
 
@@ -237,7 +237,8 @@ def save_data_for_all_cgids(cgid_list,
                             base_url,
                             base_path="data/raw"):
     """
-    Fetches and processes product data for each cgid in the list and saves it to CSV files in the specified directory.
+    Fetches and processes product data for each cgid in the list, saves it to CSV files, 
+    and uploads the files to Supabase storage.
 
     Args:
         cgid_list (list): List of cgid values for which data will be fetched.
@@ -253,7 +254,7 @@ def save_data_for_all_cgids(cgid_list,
     # Set up logging
     log_directory = "logs"
     os.makedirs(log_directory, exist_ok=True)
-    log_path = os.path.join(log_directory, f"auchan_{timestamp}.log")
+    log_path = os.path.join(log_directory, f"auchan.log")
     logger = setup_logger(log_path)
 
     logger.info(f"Starting data fetch process for {len(cgid_list)} cgids")
@@ -267,6 +268,9 @@ def save_data_for_all_cgids(cgid_list,
     data_directory = os.path.join(base_path, timestamp)
     os.makedirs(data_directory, exist_ok=True)
     logger.info(f"Data will be saved in '{data_directory}'")
+
+    # Supabase folder for uploads
+    supabase_folder = f"raw/auchan/{timestamp}"
 
     # Loop through each cgid and fetch & save the corresponding data
     for cgid in cgid_list:
@@ -286,6 +290,13 @@ def save_data_for_all_cgids(cgid_list,
                 # Save the data to CSV
                 final_data.to_csv(file_path, index=False)
                 logger.info(f"Data for {cgid} saved to {file_path}")
+
+                # Upload to Supabase
+                upload_csv_to_supabase_s3(
+                    logger=logger,
+                    file_path=file_path,
+                    folder_name=supabase_folder
+                )
             else:
                 logger.warning(f"No data found for {cgid}. Skipping...")
         except Exception as e:

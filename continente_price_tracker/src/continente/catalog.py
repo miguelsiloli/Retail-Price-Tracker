@@ -6,7 +6,7 @@ import re
 import time
 import random
 from datetime import datetime
-from utils import retry_on_failure
+from utils import retry_on_failure, upload_csv_to_supabase_s3
 import os
 from logger import setup_logger
 
@@ -218,6 +218,9 @@ def process_and_save_categories(base_path="data/raw/continente"):
         os.makedirs(base_path)
         logger.info(f"Directory '{base_path}' created.")
 
+    # Supabase folder for this process
+    supabase_folder = f"raw/continente/{datetime.now().strftime('%Y%m%d')}"
+
     # List of categories to fetch
     CATEGORIES = [
         "congelados", "frescos", "mercearias", "bebidas", "biologicos",
@@ -235,6 +238,13 @@ def process_and_save_categories(base_path="data/raw/continente"):
                 file_path = os.path.join(base_path, filename)  # Path to save the file
                 df_category_products.to_csv(file_path, index=False)
                 logger.info(f"Saved data for category '{category}' to {file_path}")
+
+                # Upload to Supabase
+                upload_csv_to_supabase_s3(
+                    logger=logger,
+                    file_path=file_path,
+                    folder_name=supabase_folder
+                )
             else:
                 logger.warning(f"No data found for category {category}.")
         except Exception as e:

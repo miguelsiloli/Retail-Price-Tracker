@@ -15,11 +15,12 @@ categories = [
 ]
 
 parse_and_save_all_categories(categories)
-
 cgid_list = [
     "alimentacao-", "biologico-e-escolhas-alimentares",
     "limpeza-da-casa-e-roupa", "bebidas-e-garrafeira", "marcas-auchan",
-    "saude-e-bem-estar/acne/"
+    "saude-e-bem-estar", "brinquedos-papelaria-livraria",
+    "Feira-de-Beleza"
+
 ]
 prefn1 = "soldInStores"
 prefv1 = "000"

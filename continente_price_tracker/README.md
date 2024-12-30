@@ -59,48 +59,7 @@ Project Organization
 
 
 --------
+TODO:
 
-<p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
-
-
-Include essential information in every log entry:
-
-    Timestamp
-    Log level (e.g., INFO, WARNING, ERROR, CRITICAL)
-    Message
-    Source (e.g., class name, method name, or file name)1
-    3
-
-Add contextual information:
-
-    User ID or username (if applicable)
-    Session ID
-    Request ID or transaction ID
-    Environment information (e.g., production, staging, development)2
-    4
-
-For error logs, include:
-
-    Stack trace
-    Error code
-    Error message
-    Exception details1
-    5
-
-
-Enrich logs with additional data:
-
-    GeoIP information for IP addresses
-    Metadata from CSV files or databases (e.g., system roles, administrator contact info)
-    Custom name-value pairs based on message content4
-
-Use structured logging formats (e.g., JSON) to make logs easily parseable and searchable4
-Implement log levels and use them appropriately:
-
-    TRACE for detailed debugging
-    DEBUG for general debugging
-    INFO for general information
-    WARN for warning messages
-    ERROR for error messages
-    FATAL for critical errors3
-
+- Hide S3 passwords
+- Add logging to SQL pipeline
