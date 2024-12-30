@@ -20,5 +20,5 @@ requests
 # backwards compatibility
 pathlib2
 psycopg2-binary
-psycopg2
+# psycopg2
 dotenv
