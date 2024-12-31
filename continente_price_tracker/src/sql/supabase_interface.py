@@ -2,6 +2,29 @@ import psycopg2
 from tqdm import tqdm
 from psycopg2.extras import execute_batch, execute_values
 from auchan.preprocessing import split_price, to_unix_time
+import logging
+from dotenv import load_dotenv
+import os
+import hashlib
+
+load_dotenv()
+
+SUPABASE_DB_CREDENTIALS = {
+    "DATABASE_NAME": os.getenv("DATABASE_NAME"),
+    "USER": os.getenv("USER"),
+    "PASSWORD": os.getenv("PASSWORD"),
+    "HOST": os.getenv("HOST")
+}
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('database_operations.log'),
+        logging.StreamHandler()
+    ]
+)
 
 class ProductDatabaseInterface:
     """
@@ -17,25 +40,28 @@ class ProductDatabaseInterface:
         Uses environment variables for connection details.
         """
         self.conn = psycopg2.connect(
-            dbname="postgres",
-            user="postgres.ahluezrirjxhplqwvspy",
-            password="9121759591mM!",
-            host="aws-0-us-east-1.pooler.supabase.com"
+            dbname=SUPABASE_DB_CREDENTIALS.get("DATABASE_NAME"),
+            user=SUPABASE_DB_CREDENTIALS.get("USER"),
+            password=SUPABASE_DB_CREDENTIALS.get("PASSWORD"),
+            host=SUPABASE_DB_CREDENTIALS.get("HOST")
         )
         self.cursor = self.conn.cursor()
+
+    def text_to_integer_encoding(self, text: str) -> int:
+        text = str(text)
+        # Use SHA-256 to ensure deterministic output
+        # Take the first 8 bytes of the hash and convert it to an integer
+        hash_bytes = hashlib.sha256(text.encode('utf-8')).digest()[:8]  # Get the first 8 bytes
+        return int.from_bytes(hash_bytes, byteorder='big', signed=True)
 
     def insert_into_product_table(self, df_product):
         """
         Insert product data into the PRODUCT table and return the product_id_pk.
-
-        Args:
-            df_product (pandas.DataFrame): A DataFrame containing product data.
-                Expected columns: product_id, product_name, source.
         """
+        logging.info(f"Starting insert_into_product_table with {len(df_product)} records")
         product_ids_pk = []
 
         for _, row in tqdm(df_product.iterrows(), total=len(df_product), desc="Inserting into PRODUCT"):
-            # Use INSERT ON CONFLICT to handle duplicates
             insert_query = '''
                 INSERT INTO PRODUCT (product_id, product_name, source)
                 VALUES (%s, %s, %s)
@@ -48,7 +74,6 @@ class ProductDatabaseInterface:
                 row["source"]
             ))
             
-            # Fetch the product_id_pk
             select_query = '''
                 SELECT product_id_pk FROM PRODUCT 
                 WHERE product_id = %s AND source = %s
@@ -58,15 +83,15 @@ class ProductDatabaseInterface:
             product_ids_pk.append(product_id_pk)
 
         self.conn.commit()
+        logging.info(f"Completed insert_into_product_table. Inserted {len(product_ids_pk)} records")
         return product_ids_pk
 
     def insert_into_product_pricing_table(self, df_pricing, product_ids_pk):
         """
         Insert pricing data into the PRODUCT_PRICING table with split price.
-        Args:
-            df_pricing (pandas.DataFrame): Pricing data DataFrame
-            product_ids_pk (list): Product IDs corresponding to pricing data
         """
+        logging.info(f"Starting insert_into_product_pricing_table with {len(df_pricing)} records")
+        
         insert_query = '''
             INSERT INTO PRODUCT_PRICING 
             (product_id_pk, price_integer, price_decimal, price_currency, timestamp)
@@ -87,19 +112,16 @@ class ProductDatabaseInterface:
             ))
         
         self.conn.commit()
+        logging.info(f"Completed insert_into_product_pricing_table")
 
     def insert_into_category_hierarchy_table(self, df_category):
         """
-        Insert category hierarchy data into the CATEGORY_HIERARCHY table and return the category_id.
-
-        Args:
-            df_category (pandas.DataFrame): A DataFrame containing category data.
-                Expected columns: category_level1, category_level2, category_level3.
+        Insert category hierarchy data into the CATEGORY_HIERARCHY table.
         """
+        logging.info(f"Starting insert_into_category_hierarchy_table with {len(df_category)} records")
         category_ids = []
 
         for _, row in tqdm(df_category.iterrows(), total=len(df_category), desc="Inserting into CATEGORY_HIERARCHY"):
-            # Insert or ignore duplicate categories
             insert_query = '''
                 INSERT INTO CATEGORY_HIERARCHY 
                 (category_level1, category_level2, category_level3)
@@ -113,7 +135,6 @@ class ProductDatabaseInterface:
                 row["category_level3"]
             ))
             
-            # Fetch the category_id
             select_query = '''
                 SELECT category_id FROM CATEGORY_HIERARCHY
                 WHERE (category_level1 = %s OR category_level1 IS NULL)
@@ -128,19 +149,16 @@ class ProductDatabaseInterface:
             ))
             category_ids.append(self.cursor.fetchone()[0])
 
-        self.conn.commit()  
+        self.conn.commit()
+        logging.info(f"Completed insert_into_category_hierarchy_table. Inserted {len(category_ids)} records")
         return category_ids
 
     def insert_into_product_category_table(self, df_product_category, category_ids, product_ids_pk):
         """
         Insert product-category mappings into the PRODUCT_CATEGORY table.
-
-        Args:
-            df_product_category (pandas.DataFrame): A DataFrame containing product-category mappings.
-                Expected columns: product_id, source, product_category, product_category2, product_category3.
-            category_ids (list): List of category_id values corresponding to the categories.
-            product_ids_pk (list): List of product_id_pk values for the products.
         """
+        logging.info(f"Starting insert_into_product_category_table with {len(df_product_category)} records")
+        
         insert_query = '''
             INSERT INTO PRODUCT_CATEGORY (product_id_pk, category_id)
             VALUES (%s, %s)
@@ -154,45 +172,23 @@ class ProductDatabaseInterface:
             ))
 
         self.conn.commit()
-
-    @staticmethod
-    def text_to_integer_encoding(value):
-        """
-        Convert a string to a deterministic integer.
-        If the value is numeric, return it as is. Otherwise, hash it deterministically.
-        """
-        try:
-            # If value is already numeric, return as integer
-            return int(value)
-        except ValueError:
-            # Otherwise, encode using hash and ensure positive integer
-            return abs(hash(value))*-1
+        logging.info("Completed insert_into_product_category_table")
 
     def bulk_insert_into_product_table(self, df_product, chunk_size=10000):
         """
-        Bulk insert products using execute_values in smaller chunks for efficiency and to avoid timeouts.
-        Ensures all product_id_pk are retrieved, even for existing records.
-    
-        Args:
-            df_product (pandas.DataFrame): Product data to insert.
-            chunk_size (int): Number of rows to process in each chunk.
+        Bulk insert products using execute_values.
         """
-    
-        # sometimes there are non-numeric product_id so we hash them (hopefully they are unique lol)
+        logging.info(f"Starting bulk_insert_into_product_table with {len(df_product)} records")
+        
         df_product['product_id'] = df_product['product_id'].apply(self.text_to_integer_encoding)
-        print(len(df_product['product_id']))
+        logging.info(f"Number of product IDs after encoding: {len(df_product['product_id'])}")
 
-        # Prepare data for bulk insert
         data_to_insert = df_product[['product_id', 'product_name', 'source']].values.tolist()
-    
-        # Final list to store product_id_pk
         product_ids_pk = []
-    
-        # Insert data in chunks with tqdm progress bar
+
         for i in tqdm(range(0, len(data_to_insert), chunk_size), desc="Inserting Products"):
             chunk = data_to_insert[i:i + chunk_size]
         
-            # First, insert the data
             insert_query = '''
                 INSERT INTO PRODUCT (product_id, product_name, source)
                 VALUES %s
@@ -200,7 +196,6 @@ class ProductDatabaseInterface:
             '''
             execute_values(self.cursor, insert_query, chunk)
         
-            # Then, retrieve all product_id_pk for this chunk
             select_query = '''
                 SELECT product_id, product_id_pk
                 FROM PRODUCT
@@ -209,35 +204,26 @@ class ProductDatabaseInterface:
                 )
             '''
         
-            # Separate product_id and source for the existing records check
             product_ids = [row[0] for row in chunk]
             sources = [row[2] for row in chunk]
         
-            # Execute the select query
             self.cursor.execute(select_query, (product_ids, sources))
-        
-            # Fetch product_id and product_id_pk for all records
             returned_records = self.cursor.fetchall()
-        
-            # Create a mapping of product_id to product_id_pk
             id_mapping = {record[0]: record[1] for record in returned_records}
-        
-            # Map the product_id_pk in the order of the original chunk
             chunk_product_ids_pk = [id_mapping[row[0]] for row in chunk]
-        
-            # Extend the final list of product_id_pk
             product_ids_pk.extend(chunk_product_ids_pk)
     
-        print(len(product_ids_pk))
-    
+        logging.info(f"Number of product IDs after insertion: {len(product_ids_pk)}")
         self.conn.commit()
+        logging.info("Completed bulk_insert_into_product_table")
         return product_ids_pk
 
     def bulk_insert_into_product_pricing_table(self, df_pricing, product_ids_pk):
         """
-        Bulk insert product pricing using execute_values with tqdm.
+        Bulk insert product pricing using execute_values.
         """
-        # Prepare data for bulk insert
+        logging.info(f"Starting bulk_insert_into_product_pricing_table with {len(df_pricing)} records")
+        
         data_to_insert = []
         for i, (_, row) in tqdm(enumerate(df_pricing.iterrows()), total=len(df_pricing), desc="Preparing Pricing Data"):
             price_integer, price_decimal = split_price(row[0])
@@ -251,7 +237,6 @@ class ProductDatabaseInterface:
                 unix_timestamp
             ))
     
-        # Modify the insert query to use %s placeholders
         insert_query = '''
             INSERT INTO PRODUCT_PRICING
             (product_id_pk, price_integer, price_decimal, price_currency, timestamp)
@@ -259,33 +244,28 @@ class ProductDatabaseInterface:
             ON CONFLICT (product_id_pk, timestamp) DO NOTHING
         '''
     
-        # Use execute_batch with the corrected query and placeholders
         execute_batch(self.cursor, insert_query, data_to_insert, page_size=1000)
         self.conn.commit()
+        logging.info("Completed bulk_insert_into_product_pricing_table")
 
     def bulk_insert_into_category_hierarchy_table_with_defaults(self, df_category):
         """
         Bulk insert category hierarchy using execute_values.
-        Ensures category_ids are retrieved for both new and existing categories,
-        maintaining the same order and handling duplicates as in the input.
-        Inserts a default entry with category_id = -1 for missing hierarchy levels.
         """
-        # Prepare data for bulk insert
+        logging.info(f"Starting bulk_insert_into_category_hierarchy_table_with_defaults with {len(df_category)} records")
+        
         data_to_insert = df_category[['category_level1', 'category_level2', 'category_level3']].fillna('-1').values.tolist()
         category_ids = []
         chunk_size = 1000
 
-        # Default placeholder for missing categories
         default_category = ['-1', '-1', '-1']
         
-        # Insert default category if it doesn't exist
         self.cursor.execute('''
             INSERT INTO CATEGORY_HIERARCHY (category_level1, category_level2, category_level3)
             VALUES (%s, %s, %s)
             ON CONFLICT (category_level1, category_level2, category_level3) DO NOTHING
         ''', default_category)
 
-        # Retrieve the ID of the default category
         self.cursor.execute('''
             SELECT category_id 
             FROM CATEGORY_HIERARCHY
@@ -293,11 +273,9 @@ class ProductDatabaseInterface:
         ''', default_category)
         default_category_id = self.cursor.fetchone()[0]
         
-        # Process in chunks with tqdm progress bar
         for i in tqdm(range(0, len(data_to_insert), chunk_size), desc="Inserting Categories"):
             chunk = data_to_insert[i:i + chunk_size]
 
-            # First, insert the data
             insert_query = '''
                 INSERT INTO CATEGORY_HIERARCHY
                 (category_level1, category_level2, category_level3)
@@ -306,7 +284,6 @@ class ProductDatabaseInterface:
             '''
             execute_values(self.cursor, insert_query, chunk)
 
-            # Then, create a mapping for each unique category in the chunk
             select_query = '''
                 SELECT 
                     category_level1, 
@@ -319,46 +296,33 @@ class ProductDatabaseInterface:
                 )
             '''
 
-            # Separate category levels for the select query
             level1 = [row[0] for row in chunk]
             level2 = [row[1] for row in chunk]
             level3 = [row[2] for row in chunk]
 
-            # Execute the select query
             self.cursor.execute(select_query, (level1, level2, level3))
-
-            # Create a mapping of category levels to category_ids
             category_mapping = {(row[0], row[1], row[2]): row[3] for row in self.cursor.fetchall()}
-
-            # Retrieve category_ids in the original chunk order, using the default if missing
             chunk_ids = [
                 category_mapping.get((row[0], row[1], row[2]), default_category_id) 
                 for row in chunk
             ]
-
-            # Extend category_ids with the retrieved IDs
             category_ids.extend(chunk_ids)
 
         self.conn.commit()
+        logging.info(f"Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted {len(category_ids)} records")
         return category_ids
-
 
     def bulk_insert_into_product_category_table(self, df_product_category, product_ids_pk, category_ids):
         """
         Bulk insert product-category relationships using execute_batch.
-        
-        Args:
-            df_product_category (pandas.DataFrame): DataFrame containing product-category information
-            product_ids_pk (list): List of product primary keys
-            category_ids (list): List of category IDs
         """
+        logging.info(f"Starting bulk_insert_into_product_category_table with {len(df_product_category)} records")
         
-        # Prepare data for bulk insert
         data_to_insert = []
         for idx in tqdm(range(len(df_product_category)), desc="Preparing Product-Category Relationships"):
             data_to_insert.append((
                 product_ids_pk[idx], 
-                category_ids[idx] if category_ids[idx] is not None else -1  # Replace None with -1
+                category_ids[idx] if category_ids[idx] is not None else -1
             ))
         
         insert_query = '''
@@ -367,10 +331,9 @@ class ProductDatabaseInterface:
             ON CONFLICT (product_id_pk, category_id) DO NOTHING
         '''
         
-        # Use execute_batch for efficient insertion
         execute_batch(self.cursor, insert_query, data_to_insert, page_size=100)
         self.conn.commit()
-
+        logging.info("Completed bulk_insert_into_product_category_table")
 
     def __del__(self):
         """

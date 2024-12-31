@@ -1,12 +1,22 @@
 import psycopg2
+from dotenv import load_dotenv
+
+load_dotenv()
+
+SUPABASE_DB_CREDENTIALS = {
+    "DATABASE_NAME": os.getenv("DATABASE_NAME"),
+    "USER": os.getenv("USER"),
+    "PASSWORD": os.getenv("PASSWORD"),
+    "HOST": os.getenv("HOST")
+}
 
 def create_product_database():
     # Alternatively, using psycopg2
     conn = psycopg2.connect(
-        dbname="postgres",
-        user="postgres.ahluezrirjxhplqwvspy",
-        password="9121759591mM!",
-        host="aws-0-us-east-1.pooler.supabase.com"
+        dbname=SUPABASE_DB_CREDENTIALS.get("DATABASE_NAME"),
+        user=SUPABASE_DB_CREDENTIALS.get("USER"),
+        password=SUPABASE_DB_CREDENTIALS.get("PASSWORD"),
+        host=SUPABASE_DB_CREDENTIALS.get("HOST")
     )
     
     cursor = conn.cursor()
@@ -44,7 +54,7 @@ def create_product_database():
         CREATE TABLE IF NOT EXISTS PRODUCT_CATEGORY (
             product_id_pk INTEGER,
             category_id INTEGER,
-            PRIMARY KEY (product_id_pk, category_id),
+            PRIMARY KEY (product_id_pk),
             FOREIGN KEY (product_id_pk) REFERENCES PRODUCT(product_id_pk),
             FOREIGN KEY (category_id) REFERENCES CATEGORY_HIERARCHY(category_id)
         );

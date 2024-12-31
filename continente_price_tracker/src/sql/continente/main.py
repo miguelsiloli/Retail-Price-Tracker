@@ -6,6 +6,7 @@ def preprocess_and_insert_data_continente(df, db_interface):
     
     # Drop duplicates for the same product_id, source and timestamp
     df = df.drop_duplicates(subset=['Product ID', 'source', 'tracking_date'])
+    df["tracking_date"] = df["tracking_date"].apply(to_unix_time)
     
     # Step 2: Apply preprocessing functions for each table
     df_product = product_table(df)

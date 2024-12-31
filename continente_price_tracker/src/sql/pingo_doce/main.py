@@ -7,6 +7,8 @@ def preprocess_and_insert_data_pingo_doce(df, db_interface):
     
     # Drop duplicates for the same product_id, source and timestamp
     df = df.drop_duplicates(subset=['product_id', 'source', 'timestamp'])
+    df["timestamp"] = df["timestamp"].apply(to_unix_time)
+    print(df.head())
     
     # Step 2: Apply preprocessing functions for each table
     df_product = pingo_doce_product_table(df)

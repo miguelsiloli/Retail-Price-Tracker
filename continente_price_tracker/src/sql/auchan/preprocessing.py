@@ -6,6 +6,12 @@ import time
 def to_unix_time(dt_str):
     """Convert a datetime string to Unix time."""
     try:
+        return int(dt_str)
+
+    except ValueError:
+        pass
+
+    try:
         return int(time.mktime(datetime.strptime(str(dt_str), "%Y%m%d").timetuple()))
     except:
         return int(time.mktime(datetime.strptime(str(dt_str), "%Y-%m-%d").timetuple()))

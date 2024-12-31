@@ -7,6 +7,8 @@ def preprocess_and_insert_data_auchan(df, db_interface):
     
     # Drop duplicates for the same product_id, source and timestamp
     df = df.drop_duplicates(subset=['product_id', 'source', 'timestamp'])
+    df["timestamp"] = df["timestamp"].apply(to_unix_time)
+    print(df.head())
     
     # PostgreSQL handles NULL values differently, so we still need to handle NaN values
     # Fill NaN values with empty strings to ensure consistent handling
@@ -26,7 +28,6 @@ def preprocess_and_insert_data_auchan(df, db_interface):
     product_ids_pk = db_interface.bulk_insert_into_product_table(df_product)
     
     # Insert category hierarchy and retrieve category_ids
-    print(len(df_category))
     category_ids = db_interface.bulk_insert_into_category_hierarchy_table_with_defaults(df_category)
     
     # Ensure the product_id_pk is mapped correctly in the product_category dataframe
