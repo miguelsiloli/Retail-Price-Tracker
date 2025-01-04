@@ -220,15 +220,16 @@ class ProductDatabaseInterface:
 
     def bulk_insert_into_product_pricing_table(self, df_pricing, product_ids_pk):
         """
-        Bulk insert product pricing using execute_values.
+        Bulk insert product pricing using execute_values with prefiltering of existing records.
         """
         logging.info(f"Starting bulk_insert_into_product_pricing_table with {len(df_pricing)} records")
         
+        # Prepare initial data
         data_to_insert = []
         for i, (_, row) in tqdm(enumerate(df_pricing.iterrows()), total=len(df_pricing), desc="Preparing Pricing Data"):
             price_integer, price_decimal = split_price(row[0])
             unix_timestamp = to_unix_time(row[1])
-        
+            
             data_to_insert.append((
                 product_ids_pk[i],
                 price_integer,
@@ -236,16 +237,61 @@ class ProductDatabaseInterface:
                 row[2],
                 unix_timestamp
             ))
-    
-        insert_query = '''
-            INSERT INTO PRODUCT_PRICING
-            (product_id_pk, price_integer, price_decimal, price_currency, timestamp)
-            VALUES (%s, %s, %s, %s, %s)
-            ON CONFLICT (product_id_pk, timestamp) DO NOTHING
+        
+        # Remove duplicates from data_to_insert based on product_id and timestamp
+        seen = set()
+        unique_data = []
+        duplicate_count = 0
+        
+        for record in data_to_insert:
+            key = (record[0], record[4])  # (product_id_pk, timestamp)
+            if key not in seen:
+                seen.add(key)
+                unique_data.append(record)
+            else:
+                duplicate_count += 1
+        
+        # Query existing records
+        existing_query = '''
+            SELECT product_id_pk, timestamp 
+            FROM PRODUCT_PRICING 
+            WHERE (product_id_pk, timestamp) = ANY(%s)
         '''
-    
-        execute_batch(self.cursor, insert_query, data_to_insert, page_size=1000)
-        self.conn.commit()
+        # Create list of (product_id, timestamp) tuples for the query
+        keys_to_check = [(record[0], record[4]) for record in unique_data]
+        self.cursor.execute(existing_query, (keys_to_check,))
+        
+        # Create set of existing composite keys
+        existing_keys = {(row[0], row[1]) for row in self.cursor.fetchall()}
+        
+        # Filter out existing records
+        filtered_data = [
+            record for record in unique_data 
+            if (record[0], record[4]) not in existing_keys
+        ]
+        
+        if filtered_data:
+            logging.info(
+                f"Found {duplicate_count} duplicates in input data. "
+                f"Filtered out {len(existing_keys)} existing records. "
+                f"Inserting {len(filtered_data)} new records."
+            )
+            
+            insert_query = '''
+                INSERT INTO PRODUCT_PRICING
+                (product_id_pk, price_integer, price_decimal, price_currency, timestamp)
+                VALUES (%s, %s, %s, %s, %s)
+            '''
+            
+            execute_batch(self.cursor, insert_query, filtered_data, page_size=1000)
+            self.conn.commit()
+        else:
+            logging.info(
+                f"Found {duplicate_count} duplicates in input data. "
+                f"All remaining {len(existing_keys)} records already exist in database. "
+                "No new records to insert."
+            )
+        
         logging.info("Completed bulk_insert_into_product_pricing_table")
 
     def bulk_insert_into_category_hierarchy_table_with_defaults(self, df_category):
@@ -314,25 +360,44 @@ class ProductDatabaseInterface:
 
     def bulk_insert_into_product_category_table(self, df_product_category, product_ids_pk, category_ids):
         """
-        Bulk insert product-category relationships using execute_batch.
+        Bulk insert product-category relationships using execute_batch with prefiltering of existing records.
         """
         logging.info(f"Starting bulk_insert_into_product_category_table with {len(df_product_category)} records")
         
-        data_to_insert = []
+        # Create set of product_id_pk pairs to insert
+        data_to_insert = set()
         for idx in tqdm(range(len(df_product_category)), desc="Preparing Product-Category Relationships"):
-            data_to_insert.append((
-                product_ids_pk[idx], 
-                category_ids[idx] if category_ids[idx] is not None else -1
-            ))
+            product_id = product_ids_pk[idx]
+            category_id = category_ids[idx] if category_ids[idx] is not None else -1
+            data_to_insert.add((product_id, category_id))
         
-        insert_query = '''
-            INSERT INTO PRODUCT_CATEGORY (product_id_pk, category_id)
-            VALUES (%s, %s)
-            ON CONFLICT (product_id_pk, category_id) DO NOTHING
+        # Query existing product_id_pk values
+        existing_query = '''
+            SELECT product_id_pk 
+            FROM PRODUCT_CATEGORY 
         '''
+        self.cursor.execute(existing_query, ([pid for pid, _ in data_to_insert],))
+        existing_product_ids = {row[0] for row in self.cursor.fetchall()}
         
-        execute_batch(self.cursor, insert_query, data_to_insert, page_size=100)
-        self.conn.commit()
+        # Remove existing records from data_to_insert
+        filtered_data = [
+            (pid, cid) for pid, cid in data_to_insert 
+            if pid not in existing_product_ids
+        ]
+        
+        if filtered_data:
+            logging.info(f"Inserting {len(filtered_data)} new records after filtering out {len(existing_product_ids)} existing records")
+            
+            insert_query = '''
+                INSERT INTO PRODUCT_CATEGORY (product_id_pk, category_id)
+                VALUES (%s, %s)
+            '''
+            
+            execute_batch(self.cursor, insert_query, filtered_data, page_size=100)
+            self.conn.commit()
+        else:
+            logging.info("No new records to insert after filtering")
+        
         logging.info("Completed bulk_insert_into_product_category_table")
 
     def __del__(self):
