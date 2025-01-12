@@ -1,1 +1,0 @@
-from pingo_doce.main import preprocess_and_insert_data_pingo_doce

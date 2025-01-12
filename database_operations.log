@@ -237,3 +237,632 @@
 2025-01-04 18:20:28,771 - INFO - Completed bulk_insert_into_product_table
 2025-01-04 18:32:04,807 - INFO - Starting bulk_insert_into_product_table with 943940 records
 2025-01-04 18:32:06,341 - INFO - Number of product IDs after encoding: 943940
+2025-01-04 18:48:37,833 - INFO - Number of product IDs after insertion: 943940
+2025-01-04 18:48:37,935 - INFO - Completed bulk_insert_into_product_table
+2025-01-04 18:48:37,989 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 943940 records
+2025-01-04 19:06:34,944 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 943940 records
+2025-01-04 19:06:35,172 - INFO - Starting bulk_insert_into_product_category_table with 943940 records
+2025-01-04 19:06:38,822 - INFO - No new records to insert after filtering
+2025-01-04 19:06:38,822 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-04 19:06:38,826 - INFO - Starting bulk_insert_into_product_pricing_table with 943940 records
+2025-01-05 15:49:30,485 - INFO - Starting bulk_insert_into_product_table with 943940 records
+2025-01-05 15:49:32,153 - INFO - Number of product IDs after encoding: 943940
+2025-01-05 16:06:49,205 - INFO - Number of product IDs after insertion: 943940
+2025-01-05 16:06:49,380 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 16:06:49,434 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 943940 records
+2025-01-05 16:25:32,045 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 943940 records
+2025-01-05 16:25:32,288 - INFO - Starting bulk_insert_into_product_category_table with 943940 records
+2025-01-05 16:25:34,855 - INFO - No new records to insert after filtering
+2025-01-05 16:25:34,855 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 16:25:34,859 - INFO - Starting bulk_insert_into_product_pricing_table with 943940 records
+2025-01-05 16:32:07,741 - INFO - Starting bulk_insert_into_product_table with 943940 records
+2025-01-05 16:32:09,470 - INFO - Number of product IDs after encoding: 943940
+2025-01-05 16:49:48,191 - INFO - Number of product IDs after insertion: 943940
+2025-01-05 16:49:48,293 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 16:49:48,349 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 943940 records
+2025-01-05 17:22:47,964 - INFO - Starting bulk_insert_into_product_table with 943940 records
+2025-01-05 17:22:49,873 - INFO - Number of product IDs after encoding: 943940
+2025-01-05 17:40:17,968 - INFO - Number of product IDs after insertion: 943940
+2025-01-05 17:40:18,070 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 17:40:18,130 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 943940 records
+2025-01-05 17:58:39,575 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 943940 records
+2025-01-05 17:58:39,823 - INFO - Starting bulk_insert_into_product_category_table with 943940 records
+2025-01-05 17:58:44,382 - INFO - No new records to insert after filtering
+2025-01-05 17:58:44,383 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 17:58:44,386 - INFO - Starting bulk_insert_into_product_pricing_table with 943940 records
+2025-01-05 18:08:14,209 - INFO - Starting bulk_insert_into_product_table with 943940 records
+2025-01-05 18:08:15,879 - INFO - Number of product IDs after encoding: 943940
+2025-01-05 18:25:42,032 - INFO - Number of product IDs after insertion: 943940
+2025-01-05 18:25:42,133 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 18:25:42,198 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 943940 records
+2025-01-05 18:43:52,993 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 943940 records
+2025-01-05 18:43:53,226 - INFO - Starting bulk_insert_into_product_category_table with 943940 records
+2025-01-05 18:43:54,588 - INFO - No new records to insert after filtering
+2025-01-05 18:43:54,588 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 18:43:54,592 - INFO - Starting bulk_insert_into_product_pricing_table with 943940 records
+2025-01-05 19:06:24,592 - INFO - Starting bulk_insert_into_product_table with 85800 records
+2025-01-05 19:06:24,754 - INFO - Number of product IDs after encoding: 85800
+2025-01-05 19:07:55,037 - INFO - Number of product IDs after insertion: 85800
+2025-01-05 19:07:55,139 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 19:07:55,149 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 85800 records
+2025-01-05 19:07:55,855 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 0 records
+2025-01-05 19:07:55,878 - INFO - Starting bulk_insert_into_product_category_table with 85800 records
+2025-01-05 19:10:22,525 - INFO - Starting bulk_insert_into_product_table with 85800 records
+2025-01-05 19:10:22,667 - INFO - Number of product IDs after encoding: 85800
+2025-01-05 19:11:54,697 - INFO - Number of product IDs after insertion: 85800
+2025-01-05 19:11:54,799 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 19:11:54,805 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 85800 records
+2025-01-05 19:13:34,438 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 85800 records
+2025-01-05 19:13:34,457 - INFO - Starting bulk_insert_into_product_category_table with 85800 records
+2025-01-05 19:13:35,047 - INFO - No new records to insert after filtering
+2025-01-05 19:13:35,047 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 19:13:35,050 - INFO - Starting bulk_insert_into_product_pricing_table with 85800 records
+2025-01-05 19:20:48,352 - INFO - Starting bulk_insert_into_product_table with 85800 records
+2025-01-05 19:20:48,524 - INFO - Number of product IDs after encoding: 85800
+2025-01-05 19:22:26,313 - INFO - Number of product IDs after insertion: 85800
+2025-01-05 19:22:26,415 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 19:22:26,433 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 85800 records
+2025-01-05 19:24:05,976 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 85800 records
+2025-01-05 19:24:05,995 - INFO - Starting bulk_insert_into_product_category_table with 85800 records
+2025-01-05 19:24:07,642 - INFO - No new records to insert after filtering
+2025-01-05 19:24:07,642 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 19:24:07,645 - INFO - Starting bulk_insert_into_product_pricing_table with 85800 records
+2025-01-05 19:30:10,084 - INFO - Starting bulk_insert_into_product_table with 85800 records
+2025-01-05 19:30:10,226 - INFO - Number of product IDs after encoding: 85800
+2025-01-05 19:31:47,477 - INFO - Number of product IDs after insertion: 85800
+2025-01-05 19:31:47,581 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 19:31:47,586 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 85800 records
+2025-01-05 19:33:27,110 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 85800 records
+2025-01-05 19:33:27,133 - INFO - Starting bulk_insert_into_product_category_table with 85800 records
+2025-01-05 19:33:28,809 - INFO - No new records to insert after filtering
+2025-01-05 19:33:28,810 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 19:33:28,812 - INFO - Starting bulk_insert_into_product_pricing_table with 85800 records
+2025-01-05 20:43:26,215 - INFO - Starting bulk_insert_into_product_table with 85800 records
+2025-01-05 20:43:26,405 - INFO - Number of product IDs after encoding: 85800
+2025-01-05 20:44:56,551 - INFO - Number of product IDs after insertion: 85800
+2025-01-05 20:44:56,654 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 20:44:56,659 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 85800 records
+2025-01-05 20:46:34,470 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 85800 records
+2025-01-05 20:46:34,494 - INFO - Starting bulk_insert_into_product_category_table with 85800 records
+2025-01-05 20:46:34,867 - INFO - No new records to insert after filtering
+2025-01-05 20:46:34,867 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 20:46:34,869 - INFO - Starting bulk_insert_into_product_pricing_table with 85800 records
+2025-01-05 20:56:57,292 - INFO - Starting bulk_insert_into_product_table with 85800 records
+2025-01-05 20:56:57,544 - INFO - Number of product IDs after encoding: 85800
+2025-01-05 20:58:29,120 - INFO - Number of product IDs after insertion: 85800
+2025-01-05 20:58:29,222 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 20:58:29,228 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 85800 records
+2025-01-05 21:00:08,215 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 85800 records
+2025-01-05 21:00:08,238 - INFO - Starting bulk_insert_into_product_category_table with 85800 records
+2025-01-05 21:00:08,714 - INFO - No new records to insert after filtering
+2025-01-05 21:00:08,714 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 21:00:08,717 - INFO - Starting bulk_insert_into_product_pricing_table with 85800 records
+2025-01-05 21:00:20,739 - INFO - Completed bulk_insert_into_product_pricing_table with upsert
+2025-01-05 21:00:20,855 - INFO - Starting bulk_insert_into_product_table with 89129 records
+2025-01-05 21:00:21,028 - INFO - Number of product IDs after encoding: 89129
+2025-01-05 21:02:01,742 - INFO - Number of product IDs after insertion: 89129
+2025-01-05 21:02:01,844 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 21:02:01,849 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 89129 records
+2025-01-05 21:03:44,854 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 89129 records
+2025-01-05 21:03:44,874 - INFO - Starting bulk_insert_into_product_category_table with 89129 records
+2025-01-05 21:03:47,625 - INFO - No new records to insert after filtering
+2025-01-05 21:03:47,625 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 21:03:47,629 - INFO - Starting bulk_insert_into_product_pricing_table with 89129 records
+2025-01-05 21:03:58,694 - INFO - Completed bulk_insert_into_product_pricing_table with upsert
+2025-01-05 21:03:58,805 - INFO - Starting bulk_insert_into_product_table with 90330 records
+2025-01-05 21:03:58,998 - INFO - Number of product IDs after encoding: 90330
+2025-01-05 21:05:35,894 - INFO - Number of product IDs after insertion: 90330
+2025-01-05 21:05:35,995 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 21:05:36,000 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 90330 records
+2025-01-05 21:07:20,638 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 90330 records
+2025-01-05 21:07:20,659 - INFO - Starting bulk_insert_into_product_category_table with 90330 records
+2025-01-05 21:07:21,838 - INFO - No new records to insert after filtering
+2025-01-05 21:07:21,839 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 21:07:21,844 - INFO - Starting bulk_insert_into_product_pricing_table with 90330 records
+2025-01-05 21:07:33,830 - INFO - Completed bulk_insert_into_product_pricing_table with upsert
+2025-01-05 21:07:33,944 - INFO - Starting bulk_insert_into_product_table with 92589 records
+2025-01-05 21:07:34,137 - INFO - Number of product IDs after encoding: 92589
+2025-01-05 21:09:12,864 - INFO - Number of product IDs after insertion: 92589
+2025-01-05 21:09:12,965 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 21:09:12,976 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 92589 records
+2025-01-05 21:11:00,824 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 92589 records
+2025-01-05 21:11:00,849 - INFO - Starting bulk_insert_into_product_category_table with 92589 records
+2025-01-05 21:11:01,868 - INFO - No new records to insert after filtering
+2025-01-05 21:11:01,869 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 21:11:01,874 - INFO - Starting bulk_insert_into_product_pricing_table with 92589 records
+2025-01-05 21:11:15,314 - INFO - Completed bulk_insert_into_product_pricing_table with upsert
+2025-01-05 21:11:15,447 - INFO - Starting bulk_insert_into_product_table with 92517 records
+2025-01-05 21:11:15,639 - INFO - Number of product IDs after encoding: 92517
+2025-01-05 21:12:54,646 - INFO - Number of product IDs after insertion: 92517
+2025-01-05 21:12:54,747 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 21:12:54,752 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 92517 records
+2025-01-05 21:14:42,025 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 92517 records
+2025-01-05 21:14:42,055 - INFO - Starting bulk_insert_into_product_category_table with 92517 records
+2025-01-05 21:14:42,832 - INFO - No new records to insert after filtering
+2025-01-05 21:14:42,832 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 21:14:42,837 - INFO - Starting bulk_insert_into_product_pricing_table with 92517 records
+2025-01-05 21:14:54,994 - INFO - Completed bulk_insert_into_product_pricing_table with upsert
+2025-01-05 21:14:55,110 - INFO - Starting bulk_insert_into_product_table with 92503 records
+2025-01-05 21:14:55,280 - INFO - Number of product IDs after encoding: 92503
+2025-01-05 21:16:34,665 - INFO - Number of product IDs after insertion: 92503
+2025-01-05 21:16:34,766 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 21:16:34,772 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 92503 records
+2025-01-05 21:18:21,956 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 92503 records
+2025-01-05 21:18:21,983 - INFO - Starting bulk_insert_into_product_category_table with 92503 records
+2025-01-05 21:18:22,757 - INFO - No new records to insert after filtering
+2025-01-05 21:18:22,757 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 21:18:22,761 - INFO - Starting bulk_insert_into_product_pricing_table with 92503 records
+2025-01-05 21:18:34,725 - INFO - Completed bulk_insert_into_product_pricing_table with upsert
+2025-01-05 21:18:34,834 - INFO - Starting bulk_insert_into_product_table with 92162 records
+2025-01-05 21:18:34,994 - INFO - Number of product IDs after encoding: 92162
+2025-01-05 21:20:13,502 - INFO - Number of product IDs after insertion: 92162
+2025-01-05 21:20:13,603 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 21:20:13,609 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 92162 records
+2025-01-05 21:22:00,744 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 92162 records
+2025-01-05 21:22:00,766 - INFO - Starting bulk_insert_into_product_category_table with 92162 records
+2025-01-05 21:22:01,534 - INFO - No new records to insert after filtering
+2025-01-05 21:22:01,534 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 21:22:01,537 - INFO - Starting bulk_insert_into_product_pricing_table with 92162 records
+2025-01-05 21:22:12,785 - INFO - Completed bulk_insert_into_product_pricing_table with upsert
+2025-01-05 21:22:12,900 - INFO - Starting bulk_insert_into_product_table with 92589 records
+2025-01-05 21:22:13,070 - INFO - Number of product IDs after encoding: 92589
+2025-01-05 21:23:52,072 - INFO - Number of product IDs after insertion: 92589
+2025-01-05 21:23:52,174 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 21:23:52,180 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 92589 records
+2025-01-05 21:25:39,413 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 92589 records
+2025-01-05 21:25:39,434 - INFO - Starting bulk_insert_into_product_category_table with 92589 records
+2025-01-05 21:25:40,112 - INFO - No new records to insert after filtering
+2025-01-05 21:25:40,113 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 21:25:40,116 - INFO - Starting bulk_insert_into_product_pricing_table with 92589 records
+2025-01-05 21:25:52,274 - INFO - Completed bulk_insert_into_product_pricing_table with upsert
+2025-01-05 21:25:52,552 - INFO - Starting bulk_insert_into_product_table with 91178 records
+2025-01-05 21:25:52,740 - INFO - Number of product IDs after encoding: 91178
+2025-01-05 21:27:29,788 - INFO - Number of product IDs after insertion: 91178
+2025-01-05 21:27:29,890 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 21:27:29,896 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 91178 records
+2025-01-05 21:29:15,774 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 91178 records
+2025-01-05 21:29:15,813 - INFO - Starting bulk_insert_into_product_category_table with 91178 records
+2025-01-05 21:29:16,391 - INFO - No new records to insert after filtering
+2025-01-05 21:29:16,391 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 21:29:16,394 - INFO - Starting bulk_insert_into_product_pricing_table with 91178 records
+2025-01-05 21:29:27,734 - INFO - Completed bulk_insert_into_product_pricing_table with upsert
+2025-01-05 21:29:27,995 - INFO - Starting bulk_insert_into_product_table with 91383 records
+2025-01-05 21:29:28,170 - INFO - Number of product IDs after encoding: 91383
+2025-01-05 21:31:06,155 - INFO - Number of product IDs after insertion: 91383
+2025-01-05 21:31:06,256 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 21:31:06,263 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 91383 records
+2025-01-05 21:32:52,631 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 91383 records
+2025-01-05 21:32:52,655 - INFO - Starting bulk_insert_into_product_category_table with 91383 records
+2025-01-05 21:32:53,125 - INFO - No new records to insert after filtering
+2025-01-05 21:32:53,125 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 21:32:53,128 - INFO - Starting bulk_insert_into_product_pricing_table with 91383 records
+2025-01-05 21:33:04,332 - INFO - Completed bulk_insert_into_product_pricing_table with upsert
+2025-01-05 21:33:04,500 - INFO - Starting bulk_insert_into_product_table with 49294 records
+2025-01-05 21:33:04,597 - INFO - Number of product IDs after encoding: 49294
+2025-01-05 21:33:56,862 - INFO - Number of product IDs after insertion: 49294
+2025-01-05 21:33:56,964 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 21:33:56,968 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 49294 records
+2025-01-05 21:34:54,175 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 49294 records
+2025-01-05 21:34:54,191 - INFO - Starting bulk_insert_into_product_category_table with 49294 records
+2025-01-05 21:34:54,556 - INFO - No new records to insert after filtering
+2025-01-05 21:34:54,556 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 21:34:54,560 - INFO - Starting bulk_insert_into_product_pricing_table with 49294 records
+2025-01-05 21:35:00,968 - INFO - Completed bulk_insert_into_product_pricing_table with upsert
+2025-01-05 21:35:03,226 - INFO - Starting bulk_insert_into_product_table with 98182 records
+2025-01-05 21:35:03,406 - INFO - Number of product IDs after encoding: 98182
+2025-01-05 21:36:47,446 - INFO - Number of product IDs after insertion: 98182
+2025-01-05 21:36:47,556 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 21:36:47,564 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 98182 records
+2025-01-05 21:38:42,136 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 98182 records
+2025-01-05 21:38:42,161 - INFO - Starting bulk_insert_into_product_category_table with 98182 records
+2025-01-05 21:38:42,748 - INFO - No new records to insert after filtering
+2025-01-05 21:38:42,748 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 21:38:42,754 - INFO - Starting bulk_insert_into_product_pricing_table with 98182 records
+2025-01-05 21:56:31,651 - INFO - Starting bulk_insert_into_product_table with 98182 records
+2025-01-05 21:56:31,833 - INFO - Number of product IDs after encoding: 98182
+2025-01-05 21:58:17,179 - INFO - Number of product IDs after insertion: 98182
+2025-01-05 21:58:17,282 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 21:58:17,290 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 98182 records
+2025-01-05 22:00:11,615 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 98182 records
+2025-01-05 22:00:11,640 - INFO - Starting bulk_insert_into_product_category_table with 98182 records
+2025-01-05 22:00:12,125 - INFO - No new records to insert after filtering
+2025-01-05 22:00:12,126 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 22:00:12,131 - INFO - Starting bulk_insert_into_product_pricing_table with 98182 records
+2025-01-05 22:00:24,087 - INFO - Completed bulk_insert_into_product_pricing_table with upsert using temporary table
+2025-01-05 22:00:25,047 - INFO - Starting bulk_insert_into_product_table with 44118 records
+2025-01-05 22:00:25,124 - INFO - Number of product IDs after encoding: 44118
+2025-01-05 22:01:12,523 - INFO - Number of product IDs after insertion: 44118
+2025-01-05 22:01:12,626 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 22:01:12,632 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 44118 records
+2025-01-05 22:02:04,182 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 44118 records
+2025-01-05 22:02:04,195 - INFO - Starting bulk_insert_into_product_category_table with 44118 records
+2025-01-05 22:02:04,666 - INFO - No new records to insert after filtering
+2025-01-05 22:02:04,666 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 22:02:04,669 - INFO - Starting bulk_insert_into_product_pricing_table with 44118 records
+2025-01-05 22:02:09,994 - INFO - Completed bulk_insert_into_product_pricing_table with upsert using temporary table
+2025-01-05 22:20:24,536 - INFO - Starting bulk_insert_into_product_table with 98182 records
+2025-01-05 22:20:24,724 - INFO - Number of product IDs after encoding: 98182
+2025-01-05 22:22:09,880 - INFO - Number of product IDs after insertion: 98182
+2025-01-05 22:22:09,983 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 22:22:09,991 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 98182 records
+2025-01-05 22:24:04,567 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 98182 records
+2025-01-05 22:24:04,592 - INFO - Starting bulk_insert_into_product_category_table with 98182 records
+2025-01-05 22:24:05,064 - INFO - No new records to insert after filtering
+2025-01-05 22:24:05,065 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 22:24:05,069 - INFO - Starting bulk_insert_into_product_pricing_table with 98182 records
+2025-01-05 22:24:16,730 - INFO - Completed bulk_insert_into_product_pricing_table with upsert using temporary table
+2025-01-05 22:24:17,681 - INFO - Starting bulk_insert_into_product_table with 44118 records
+2025-01-05 22:24:17,757 - INFO - Number of product IDs after encoding: 44118
+2025-01-05 22:25:04,937 - INFO - Number of product IDs after insertion: 44118
+2025-01-05 22:25:05,040 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 22:25:05,045 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 44118 records
+2025-01-05 22:25:56,695 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 44118 records
+2025-01-05 22:25:56,708 - INFO - Starting bulk_insert_into_product_category_table with 44118 records
+2025-01-05 22:25:57,102 - INFO - No new records to insert after filtering
+2025-01-05 22:25:57,102 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 22:25:57,105 - INFO - Starting bulk_insert_into_product_pricing_table with 44118 records
+2025-01-05 22:26:02,957 - INFO - Completed bulk_insert_into_product_pricing_table with upsert using temporary table
+2025-01-05 22:39:03,756 - INFO - Starting bulk_insert_into_product_table with 98182 records
+2025-01-05 22:39:03,921 - INFO - Number of product IDs after encoding: 98182
+2025-01-05 22:40:49,020 - INFO - Number of product IDs after insertion: 98182
+2025-01-05 22:40:49,124 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 22:40:49,131 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 98182 records
+2025-01-05 22:42:43,597 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 98182 records
+2025-01-05 22:42:43,622 - INFO - Starting bulk_insert_into_product_category_table with 98182 records
+2025-01-05 22:42:44,019 - INFO - No new records to insert after filtering
+2025-01-05 22:42:44,019 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 22:42:44,024 - INFO - Starting bulk_insert_into_product_pricing_table with 98182 records
+2025-01-05 22:42:55,261 - INFO - Completed bulk_insert_into_product_pricing_table with upsert using temporary table
+2025-01-05 22:42:56,163 - INFO - Starting bulk_insert_into_product_table with 44118 records
+2025-01-05 22:42:56,244 - INFO - Number of product IDs after encoding: 44118
+2025-01-05 22:43:43,376 - INFO - Number of product IDs after insertion: 44118
+2025-01-05 22:43:43,479 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 22:43:43,485 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 44118 records
+2025-01-05 22:44:35,181 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 44118 records
+2025-01-05 22:44:35,193 - INFO - Starting bulk_insert_into_product_category_table with 44118 records
+2025-01-05 22:44:35,569 - INFO - No new records to insert after filtering
+2025-01-05 22:44:35,570 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 22:44:35,572 - INFO - Starting bulk_insert_into_product_pricing_table with 44118 records
+2025-01-05 22:44:40,782 - INFO - Completed bulk_insert_into_product_pricing_table with upsert using temporary table
+2025-01-05 22:55:42,130 - INFO - Starting bulk_insert_into_product_table with 98182 records
+2025-01-05 22:55:42,346 - INFO - Number of product IDs after encoding: 98182
+2025-01-05 22:57:26,997 - INFO - Number of product IDs after insertion: 98182
+2025-01-05 22:57:27,100 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 22:57:27,107 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 98182 records
+2025-01-05 22:59:23,856 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 98182 records
+2025-01-05 22:59:23,882 - INFO - Starting bulk_insert_into_product_category_table with 98182 records
+2025-01-05 22:59:28,823 - INFO - No new records to insert after filtering
+2025-01-05 22:59:28,824 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 22:59:28,830 - INFO - Starting bulk_insert_into_product_pricing_table with 98182 records
+2025-01-05 22:59:41,576 - INFO - Completed bulk_insert_into_product_pricing_table with upsert using temporary table
+2025-01-05 22:59:42,577 - INFO - Starting bulk_insert_into_product_table with 44118 records
+2025-01-05 22:59:42,660 - INFO - Number of product IDs after encoding: 44118
+2025-01-05 23:00:37,979 - INFO - Number of product IDs after insertion: 44118
+2025-01-05 23:00:38,080 - INFO - Completed bulk_insert_into_product_table
+2025-01-05 23:00:38,085 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 44118 records
+2025-01-05 23:01:30,007 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 44118 records
+2025-01-05 23:01:30,024 - INFO - Starting bulk_insert_into_product_category_table with 44118 records
+2025-01-05 23:01:31,954 - INFO - No new records to insert after filtering
+2025-01-05 23:01:31,954 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-05 23:01:31,959 - INFO - Starting bulk_insert_into_product_pricing_table with 44118 records
+2025-01-05 23:01:38,005 - INFO - Completed bulk_insert_into_product_pricing_table with upsert using temporary table
+2025-01-05 23:01:38,081 - INFO - Starting bulk_insert_into_product_table with 41300 records
+2025-01-05 23:01:38,157 - INFO - Number of product IDs after encoding: 41300
+2025-01-05 23:02:22,273 - INFO - Number of product IDs after insertion: 41300
+2025-01-05 23:02:22,375 - INFO - Completed bulk_insert_into_product_table
+2025-01-06 10:15:54,647 - INFO - Starting bulk_insert_into_product_table with 85800 records
+2025-01-06 10:15:55,093 - INFO - Number of product IDs after encoding: 85800
+2025-01-06 10:17:29,912 - INFO - Number of product IDs after insertion: 85800
+2025-01-06 10:17:30,014 - INFO - Completed bulk_insert_into_product_table
+2025-01-06 10:17:30,020 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 85800 records
+2025-01-06 10:19:09,680 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 85800 records
+2025-01-06 10:19:09,705 - INFO - Starting bulk_insert_into_product_category_table with 85800 records
+2025-01-06 10:19:10,189 - INFO - No new records to insert after filtering
+2025-01-06 10:19:10,190 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-06 10:19:10,192 - INFO - Starting bulk_insert_into_product_pricing_table with 85800 records
+2025-01-06 10:19:21,648 - INFO - Completed bulk_insert_into_product_pricing_table with upsert using temporary table
+2025-01-06 10:19:21,754 - INFO - Starting bulk_insert_into_product_table with 89129 records
+2025-01-06 10:19:21,905 - INFO - Number of product IDs after encoding: 89129
+2025-01-06 10:20:57,475 - INFO - Number of product IDs after insertion: 89129
+2025-01-06 10:20:57,578 - INFO - Completed bulk_insert_into_product_table
+2025-01-06 10:20:57,583 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 89129 records
+2025-01-06 10:22:41,496 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 89129 records
+2025-01-06 10:22:41,518 - INFO - Starting bulk_insert_into_product_category_table with 89129 records
+2025-01-06 10:22:42,010 - INFO - No new records to insert after filtering
+2025-01-06 10:22:42,010 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-06 10:22:42,013 - INFO - Starting bulk_insert_into_product_pricing_table with 89129 records
+2025-01-06 10:22:53,324 - INFO - Completed bulk_insert_into_product_pricing_table with upsert using temporary table
+2025-01-06 10:22:53,430 - INFO - Starting bulk_insert_into_product_table with 90330 records
+2025-01-06 10:22:53,575 - INFO - Number of product IDs after encoding: 90330
+2025-01-06 10:24:30,130 - INFO - Number of product IDs after insertion: 90330
+2025-01-06 10:24:30,232 - INFO - Completed bulk_insert_into_product_table
+2025-01-06 10:24:30,239 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 90330 records
+2025-01-06 10:26:15,641 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 90330 records
+2025-01-06 10:26:15,662 - INFO - Starting bulk_insert_into_product_category_table with 90330 records
+2025-01-06 10:26:16,162 - INFO - No new records to insert after filtering
+2025-01-06 10:26:16,162 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-06 10:26:16,164 - INFO - Starting bulk_insert_into_product_pricing_table with 90330 records
+2025-01-06 10:26:27,501 - INFO - Completed bulk_insert_into_product_pricing_table with upsert using temporary table
+2025-01-06 10:26:27,617 - INFO - Starting bulk_insert_into_product_table with 92589 records
+2025-01-06 10:26:27,859 - INFO - Number of product IDs after encoding: 92589
+2025-01-06 10:28:06,640 - INFO - Number of product IDs after insertion: 92589
+2025-01-06 10:28:06,747 - INFO - Completed bulk_insert_into_product_table
+2025-01-06 10:28:06,752 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 92589 records
+2025-01-06 10:29:54,114 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 92589 records
+2025-01-06 10:29:54,154 - INFO - Starting bulk_insert_into_product_category_table with 92589 records
+2025-01-06 10:29:54,530 - INFO - No new records to insert after filtering
+2025-01-06 10:29:54,530 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-06 10:29:54,533 - INFO - Starting bulk_insert_into_product_pricing_table with 92589 records
+2025-01-06 10:30:05,552 - INFO - Completed bulk_insert_into_product_pricing_table with upsert using temporary table
+2025-01-06 10:30:05,669 - INFO - Starting bulk_insert_into_product_table with 92517 records
+2025-01-06 10:30:05,877 - INFO - Number of product IDs after encoding: 92517
+2025-01-06 10:31:45,051 - INFO - Number of product IDs after insertion: 92517
+2025-01-06 10:31:45,154 - INFO - Completed bulk_insert_into_product_table
+2025-01-06 10:31:45,160 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 92517 records
+2025-01-06 10:33:32,764 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 92517 records
+2025-01-06 10:33:32,791 - INFO - Starting bulk_insert_into_product_category_table with 92517 records
+2025-01-06 10:33:33,264 - INFO - No new records to insert after filtering
+2025-01-06 10:33:33,264 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-06 10:33:33,268 - INFO - Starting bulk_insert_into_product_pricing_table with 92517 records
+2025-01-06 10:33:44,552 - INFO - Completed bulk_insert_into_product_pricing_table with upsert using temporary table
+2025-01-06 10:33:44,683 - INFO - Starting bulk_insert_into_product_table with 92503 records
+2025-01-06 10:33:44,869 - INFO - Number of product IDs after encoding: 92503
+2025-01-06 10:35:24,488 - INFO - Number of product IDs after insertion: 92503
+2025-01-06 10:35:24,590 - INFO - Completed bulk_insert_into_product_table
+2025-01-06 10:35:24,597 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 92503 records
+2025-01-06 10:37:12,008 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 92503 records
+2025-01-06 10:37:12,031 - INFO - Starting bulk_insert_into_product_category_table with 92503 records
+2025-01-06 10:37:12,501 - INFO - No new records to insert after filtering
+2025-01-06 10:37:12,501 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-06 10:37:12,504 - INFO - Starting bulk_insert_into_product_pricing_table with 92503 records
+2025-01-06 10:37:23,266 - INFO - Completed bulk_insert_into_product_pricing_table with upsert using temporary table
+2025-01-06 10:37:23,377 - INFO - Starting bulk_insert_into_product_table with 92162 records
+2025-01-06 10:37:23,551 - INFO - Number of product IDs after encoding: 92162
+2025-01-06 10:39:02,168 - INFO - Number of product IDs after insertion: 92162
+2025-01-06 10:39:02,271 - INFO - Completed bulk_insert_into_product_table
+2025-01-06 10:39:02,279 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 92162 records
+2025-01-06 10:43:32,199 - INFO - Starting insert_into_product_table with 85800 records
+2025-01-06 10:45:08,133 - INFO - Completed insert_into_product_table. Upserted 85800 records
+2025-01-06 10:45:08,137 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 85800 records
+2025-01-06 10:46:48,896 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 85800 records
+2025-01-06 10:46:48,918 - INFO - Starting bulk_insert_into_product_category_table with 85800 records
+2025-01-06 10:46:49,729 - INFO - Inserting 23677 new records after filtering out 68837 existing records
+2025-01-06 10:57:35,395 - INFO - Starting insert_into_product_table with 85800 records
+2025-01-06 10:59:10,183 - INFO - Completed insert_into_product_table. Upserted 85800 records
+2025-01-06 10:59:10,187 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 85800 records
+2025-01-06 11:00:50,112 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 85800 records
+2025-01-06 11:00:50,141 - INFO - Starting bulk_insert_into_product_category_table with 85800 records
+2025-01-06 11:00:50,952 - INFO - Inserting 23677 new records after filtering out 68837 existing records
+2025-01-06 11:06:33,898 - INFO - Starting insert_into_product_table with 85800 records
+2025-01-06 11:08:10,101 - INFO - Completed insert_into_product_table. Upserted 85800 records
+2025-01-06 11:08:10,104 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 85800 records
+2025-01-06 11:09:49,617 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 85800 records
+2025-01-06 11:09:49,639 - INFO - Starting bulk_insert_into_product_category_table with 85800 records
+2025-01-06 11:09:50,435 - INFO - Inserting 23677 new records after filtering out 68837 existing records
+2025-01-06 11:13:18,727 - INFO - Starting insert_into_product_table with 85800 records
+2025-01-06 11:14:53,704 - INFO - Completed insert_into_product_table. Upserted 85800 records
+2025-01-06 11:14:53,710 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 85800 records
+2025-01-06 11:16:33,733 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 85800 records
+2025-01-06 11:16:33,768 - INFO - Starting bulk_insert_into_product_category_table with 85800 records
+2025-01-06 11:16:34,546 - INFO - Inserting 23677 new records after filtering out 68837 existing records
+2025-01-06 11:17:01,025 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-06 11:17:01,028 - INFO - Starting insert_into_product_pricing_table with 85800 records
+2025-01-06 11:54:10,772 - INFO - Starting insert_into_product_table with 85800 records
+2025-01-06 11:55:44,376 - INFO - Completed insert_into_product_table. Upserted 85800 records
+2025-01-06 11:55:44,380 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 85800 records
+2025-01-06 11:57:22,489 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 85800 records
+2025-01-06 11:57:22,514 - INFO - Starting bulk_insert_into_product_category_table with 85800 records
+2025-01-06 11:57:23,319 - INFO - No new records to insert after filtering
+2025-01-06 11:57:23,320 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-06 11:57:23,323 - INFO - Starting bulk_insert_into_product_pricing_table with 85800 records
+2025-01-06 11:57:37,876 - INFO - Completed bulk_insert_into_product_pricing_table with upsert using temporary table
+2025-01-06 11:57:39,238 - INFO - Starting insert_into_product_table with 89129 records
+2025-01-06 11:59:16,330 - INFO - Completed insert_into_product_table. Upserted 89129 records
+2025-01-06 11:59:16,335 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 89129 records
+2025-01-06 12:00:58,406 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 89129 records
+2025-01-06 12:00:58,440 - INFO - Starting bulk_insert_into_product_category_table with 89129 records
+2025-01-06 12:00:59,162 - INFO - Inserting 119 new records after filtering out 92479 existing records
+2025-01-06 12:00:59,491 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-06 12:00:59,495 - INFO - Starting bulk_insert_into_product_pricing_table with 89129 records
+2025-01-06 12:01:15,349 - INFO - Completed bulk_insert_into_product_pricing_table with upsert using temporary table
+2025-01-06 12:01:16,765 - INFO - Starting insert_into_product_table with 90330 records
+2025-01-06 12:02:55,492 - INFO - Completed insert_into_product_table. Upserted 90330 records
+2025-01-06 12:02:55,496 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 90330 records
+2025-01-06 12:04:38,768 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 90330 records
+2025-01-06 12:04:38,791 - INFO - Starting bulk_insert_into_product_category_table with 90330 records
+2025-01-06 12:04:39,495 - INFO - Inserting 61 new records after filtering out 92598 existing records
+2025-01-06 12:04:39,710 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-06 12:04:39,713 - INFO - Starting bulk_insert_into_product_pricing_table with 90330 records
+2025-01-06 12:04:54,528 - INFO - Completed bulk_insert_into_product_pricing_table with upsert using temporary table
+2025-01-06 12:04:55,897 - INFO - Starting insert_into_product_table with 92589 records
+2025-01-06 12:06:36,812 - INFO - Completed insert_into_product_table. Upserted 92589 records
+2025-01-06 12:06:36,816 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 92589 records
+2025-01-06 12:08:22,658 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 92589 records
+2025-01-06 12:08:22,679 - INFO - Starting bulk_insert_into_product_category_table with 92589 records
+2025-01-06 12:08:23,431 - INFO - Inserting 8446 new records after filtering out 92659 existing records
+2025-01-06 12:08:32,748 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-06 12:08:32,751 - INFO - Starting bulk_insert_into_product_pricing_table with 92589 records
+2025-01-06 12:08:47,981 - INFO - Completed bulk_insert_into_product_pricing_table with upsert using temporary table
+2025-01-06 12:08:49,451 - INFO - Starting insert_into_product_table with 92517 records
+2025-01-06 12:10:30,071 - INFO - Completed insert_into_product_table. Upserted 92517 records
+2025-01-06 12:10:30,075 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 92517 records
+2025-01-06 12:12:15,835 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 92517 records
+2025-01-06 12:12:15,856 - INFO - Starting bulk_insert_into_product_category_table with 92517 records
+2025-01-06 12:12:16,648 - INFO - Inserting 1029 new records after filtering out 101004 existing records
+2025-01-06 12:12:17,930 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-06 12:12:17,933 - INFO - Starting bulk_insert_into_product_pricing_table with 92517 records
+2025-01-06 12:12:32,856 - INFO - Completed bulk_insert_into_product_pricing_table with upsert using temporary table
+2025-01-06 12:12:34,288 - INFO - Starting insert_into_product_table with 92503 records
+2025-01-06 12:14:14,967 - INFO - Completed insert_into_product_table. Upserted 92503 records
+2025-01-06 12:14:14,973 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 92503 records
+2025-01-06 12:16:00,706 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 92503 records
+2025-01-06 12:16:00,727 - INFO - Starting bulk_insert_into_product_category_table with 92503 records
+2025-01-06 12:16:01,451 - INFO - Inserting 93 new records after filtering out 102033 existing records
+2025-01-06 12:16:01,671 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-06 12:16:01,676 - INFO - Starting bulk_insert_into_product_pricing_table with 92503 records
+2025-01-06 12:16:17,350 - INFO - Completed bulk_insert_into_product_pricing_table with upsert using temporary table
+2025-01-06 12:16:18,838 - INFO - Starting insert_into_product_table with 92162 records
+2025-01-06 12:17:59,317 - INFO - Completed insert_into_product_table. Upserted 92162 records
+2025-01-06 12:17:59,321 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 92162 records
+2025-01-06 12:19:45,524 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 92162 records
+2025-01-06 12:19:45,546 - INFO - Starting bulk_insert_into_product_category_table with 92162 records
+2025-01-06 12:19:46,365 - INFO - Inserting 74 new records after filtering out 102126 existing records
+2025-01-06 12:19:46,574 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-06 12:19:46,578 - INFO - Starting bulk_insert_into_product_pricing_table with 92162 records
+2025-01-06 12:20:01,862 - INFO - Completed bulk_insert_into_product_pricing_table with upsert using temporary table
+2025-01-06 12:20:03,275 - INFO - Starting insert_into_product_table with 92589 records
+2025-01-06 12:21:43,960 - INFO - Completed insert_into_product_table. Upserted 92589 records
+2025-01-06 12:21:43,964 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 92589 records
+2025-01-06 12:23:29,797 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 92589 records
+2025-01-06 12:23:29,830 - INFO - Starting bulk_insert_into_product_category_table with 92589 records
+2025-01-06 12:23:30,530 - INFO - Inserting 54 new records after filtering out 102200 existing records
+2025-01-06 12:23:30,741 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-06 12:23:30,749 - INFO - Starting bulk_insert_into_product_pricing_table with 92589 records
+2025-01-06 12:23:46,102 - INFO - Completed bulk_insert_into_product_pricing_table with upsert using temporary table
+2025-01-06 12:23:47,594 - INFO - Starting insert_into_product_table with 91178 records
+2025-01-06 12:25:27,252 - INFO - Completed insert_into_product_table. Upserted 91178 records
+2025-01-06 12:25:27,257 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 91178 records
+2025-01-06 12:27:11,714 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 91178 records
+2025-01-06 12:27:11,735 - INFO - Starting bulk_insert_into_product_category_table with 91178 records
+2025-01-06 12:27:12,462 - INFO - Inserting 83 new records after filtering out 102254 existing records
+2025-01-06 12:27:12,672 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-06 12:27:12,676 - INFO - Starting bulk_insert_into_product_pricing_table with 91178 records
+2025-01-06 12:27:28,213 - INFO - Completed bulk_insert_into_product_pricing_table with upsert using temporary table
+2025-01-06 12:27:29,661 - INFO - Starting insert_into_product_table with 91383 records
+2025-01-06 12:29:09,122 - INFO - Completed insert_into_product_table. Upserted 91383 records
+2025-01-06 12:29:09,127 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 91383 records
+2025-01-06 12:30:53,633 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 91383 records
+2025-01-06 12:30:53,669 - INFO - Starting bulk_insert_into_product_category_table with 91383 records
+2025-01-06 12:30:54,410 - INFO - Inserting 29 new records after filtering out 102337 existing records
+2025-01-06 12:30:54,630 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-06 12:30:54,634 - INFO - Starting bulk_insert_into_product_pricing_table with 91383 records
+2025-01-06 12:31:11,418 - INFO - Completed bulk_insert_into_product_pricing_table with upsert using temporary table
+2025-01-06 12:31:12,293 - INFO - Starting insert_into_product_table with 49294 records
+2025-01-06 12:32:05,984 - INFO - Completed insert_into_product_table. Upserted 49294 records
+2025-01-06 12:32:06,024 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 49294 records
+2025-01-06 12:33:02,578 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 49294 records
+2025-01-06 12:33:02,590 - INFO - Starting bulk_insert_into_product_category_table with 49294 records
+2025-01-06 12:33:03,330 - INFO - Inserting 27 new records after filtering out 102366 existing records
+2025-01-06 12:33:03,537 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-06 12:33:03,541 - INFO - Starting bulk_insert_into_product_pricing_table with 49294 records
+2025-01-06 12:33:12,214 - INFO - Completed bulk_insert_into_product_pricing_table with upsert using temporary table
+2025-01-06 13:51:34,648 - INFO - Starting insert_into_product_table with 98182 records
+2025-01-06 13:51:39,306 - ERROR - Error in insert_into_product_table: invalid input syntax for type bigint: "bzrhorarefeicao"
+LINE 3: ...00','Formas e Autocolantes - Pato','Continente'),('bzrhorare...
+                                                             ^
+
+2025-01-06 13:55:21,874 - INFO - Starting insert_into_product_table with 98182 records
+2025-01-06 13:55:33,317 - ERROR - Error in insert_into_product_table: invalid input syntax for type bigint: "bzrhorarefeicao"
+LINE 3: ...00','Formas e Autocolantes - Pato','Continente'),('bzrhorare...
+                                                             ^
+
+2025-01-06 14:04:29,014 - INFO - Starting insert_into_product_table with 98182 records
+2025-01-06 14:06:25,291 - INFO - Completed insert_into_product_table. Upserted 98182 records
+2025-01-06 14:06:25,299 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 98182 records
+2025-01-06 14:08:20,127 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 98182 records
+2025-01-06 14:08:20,158 - INFO - Starting bulk_insert_into_product_category_table with 98182 records
+2025-01-06 14:08:21,156 - INFO - Inserting 20643 new records after filtering out 102393 existing records
+2025-01-06 14:08:44,694 - INFO - Completed bulk_insert_into_product_category_table
+2025-01-06 14:08:44,701 - INFO - Starting bulk_insert_into_product_pricing_table with 98182 records
+2025-01-06 14:12:58,128 - INFO - Starting insert_into_product_table with 98182 records
+2025-01-06 14:13:04,425 - ERROR - Error in insert_into_product_table: ON CONFLICT DO UPDATE command cannot affect row a second time
+HINT:  Ensure that no rows proposed for insertion within the same command have duplicate constrained values.
+
+2025-01-06 14:18:34,790 - INFO - Starting insert_into_product_table with 98182 records
+2025-01-06 14:18:41,191 - ERROR - Error in insert_into_product_table: ON CONFLICT DO UPDATE command cannot affect row a second time
+HINT:  Ensure that no rows proposed for insertion within the same command have duplicate constrained values.
+
+2025-01-06 14:23:19,189 - INFO - Starting insert_into_product_table with 98182 records
+2025-01-06 14:23:58,339 - INFO - Completed insert_into_product_table. Upserted 33380 records
+2025-01-06 14:23:58,357 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 98182 records
+2025-01-06 14:25:50,424 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 98182 records
+2025-01-06 14:27:38,675 - INFO - Starting insert_into_product_table with 98182 records
+2025-01-06 14:27:43,449 - ERROR - Error in insert_into_product_table: syntax error at or near "IGNORE"
+LINE 5:             DO IGNORE
+                       ^
+
+2025-01-06 14:29:52,474 - INFO - Starting insert_into_product_table with 98182 records
+2025-01-06 14:30:32,845 - INFO - Completed insert_into_product_table. Upserted 0 records
+2025-01-06 14:30:32,857 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 98182 records
+2025-01-06 14:32:28,928 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 98182 records
+2025-01-06 14:48:38,036 - INFO - Starting insert_into_product_table with 98182 records
+2025-01-06 14:49:18,447 - INFO - Completed insert_into_product_table. Upserted 0 records
+2025-01-06 14:49:18,458 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 98182 records
+2025-01-06 14:51:15,050 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 98182 records
+2025-01-06 15:01:37,206 - INFO - Starting insert_into_product_table with 98182 records
+2025-01-06 15:01:42,172 - ERROR - Error in insert_into_product_table: no results to fetch
+2025-01-06 15:05:08,264 - INFO - Starting insert_into_product_table with 98182 records
+2025-01-06 15:05:47,501 - ERROR - Error in insert_into_product_table: 'NoneType' object is not iterable
+2025-01-06 15:07:56,534 - INFO - Starting insert_into_product_table with 98182 records
+2025-01-06 15:08:36,677 - INFO - Completed insert_into_product_table. Inserted 33380 records.
+2025-01-06 15:08:36,686 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 98182 records
+2025-01-06 15:10:33,264 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 98182 records
+2025-01-06 15:10:33,272 - INFO - Starting bulk_insert_into_product_category_table with 98182 records
+2025-01-06 15:13:15,233 - INFO - Starting insert_into_product_table with 9854 records
+2025-01-06 15:13:24,698 - INFO - Completed insert_into_product_table. Inserted 8185 records.
+2025-01-06 15:13:24,700 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 9854 records
+2025-01-06 15:13:37,947 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 9854 records
+2025-01-06 15:20:56,446 - INFO - Starting insert_into_product_table with 9854 records
+2025-01-06 15:21:05,434 - INFO - Completed insert_into_product_table. Inserted 8185 records.
+2025-01-06 15:21:05,435 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 9854 records
+2025-01-06 15:21:17,275 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 9854 records
+2025-01-06 15:22:16,877 - INFO - Starting insert_into_product_table with 9854 records
+2025-01-06 15:22:26,814 - INFO - Completed insert_into_product_table. Inserted 8185 records.
+2025-01-06 15:22:26,816 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 9854 records
+2025-01-06 15:22:40,360 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 9854 records
+2025-01-06 15:23:03,682 - INFO - Starting insert_into_product_table with 9854 records
+2025-01-06 15:23:13,426 - INFO - Completed insert_into_product_table. Inserted 8185 records.
+2025-01-06 15:23:13,428 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 9854 records
+2025-01-06 15:23:27,134 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 9854 records
+2025-01-06 15:25:16,445 - INFO - Starting insert_into_product_table with 9854 records
+2025-01-06 15:25:26,462 - INFO - Completed insert_into_product_table. Inserted 8185 records.
+2025-01-06 15:25:26,464 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 9854 records
+2025-01-06 15:25:39,831 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 9854 records
+2025-01-06 15:28:04,168 - INFO - Starting insert_into_product_table with 9854 records
+2025-01-06 15:28:13,274 - INFO - Completed insert_into_product_table. Inserted 8185 records.
+2025-01-06 15:28:13,276 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 9854 records
+2025-01-06 15:28:25,179 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 9854 records
+2025-01-06 15:28:25,180 - INFO - Starting get_product_ids_by_name with 9854 records
+2025-01-06 15:28:25,633 - ERROR - Error in get_product_ids_by_name: operator does not exist: bigint = text
+LINE 8:                 ON p.product_id = t.product_id
+                                        ^
+HINT:  No operator matches the given name and argument types. You might need to add explicit type casts.
+
+2025-01-06 15:30:24,928 - INFO - Starting insert_into_product_table with 9854 records
+2025-01-06 15:30:34,246 - INFO - Completed insert_into_product_table. Inserted 8185 records.
+2025-01-06 15:30:34,247 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 9854 records
+2025-01-06 15:30:46,617 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 9854 records
+2025-01-06 15:30:46,618 - INFO - Starting get_product_ids_by_name with 9854 records
+2025-01-06 15:30:46,619 - ERROR - Error in get_product_ids_by_name: invalid literal for int() with base 10: 'bzrhorarefeicao'
+2025-01-06 15:32:36,264 - INFO - Starting insert_into_product_table with 9854 records
+2025-01-06 15:32:45,568 - INFO - Completed insert_into_product_table. Inserted 8185 records.
+2025-01-06 15:32:45,571 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 9854 records
+2025-01-06 15:32:57,750 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 9854 records
+2025-01-06 15:32:57,751 - INFO - Starting get_product_ids_by_name with 9854 records
+2025-01-06 15:32:58,896 - ERROR - Error in get_product_ids_by_name: name 'pd' is not defined
+2025-01-06 15:34:37,234 - INFO - Starting insert_into_product_table with 9854 records
+2025-01-06 15:34:47,607 - INFO - Completed insert_into_product_table. Inserted 8185 records.
+2025-01-06 15:34:47,608 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 9854 records
+2025-01-06 15:35:00,980 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 9854 records
+2025-01-06 15:35:00,981 - INFO - Starting get_product_ids_by_name with 9854 records
+2025-01-06 15:35:02,176 - INFO - Found matches for 1657 out of 9854 records
+2025-01-06 15:43:22,775 - INFO - Starting insert_into_product_table with 9854 records
+2025-01-06 15:43:32,041 - INFO - Completed insert_into_product_table. Inserted 8185 records.
+2025-01-06 15:43:32,042 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 9854 records
+2025-01-06 15:43:44,233 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 9854 records
+2025-01-06 15:43:44,234 - INFO - Starting get_product_ids_by_name with 9854 records
+2025-01-06 15:43:44,945 - INFO - Found matches for 1679 out of 9854 records
+2025-01-06 15:45:25,881 - INFO - Starting insert_into_product_table with 9854 records
+2025-01-06 15:45:34,937 - INFO - Completed insert_into_product_table. Inserted 8185 records.
+2025-01-06 15:45:34,939 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 9854 records
+2025-01-06 15:45:46,814 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 9854 records
+2025-01-06 15:45:46,815 - INFO - Starting get_product_ids_by_name with 9854 records
+2025-01-06 15:45:47,522 - INFO - Found matches for 1679 out of 9854 records
+2025-01-06 15:46:34,234 - INFO - Starting insert_into_product_table with 9854 records
+2025-01-06 15:46:43,427 - INFO - Completed insert_into_product_table. Inserted 8185 records.
+2025-01-06 15:46:43,428 - INFO - Starting bulk_insert_into_category_hierarchy_table_with_defaults with 9854 records
+2025-01-06 15:46:55,395 - INFO - Completed bulk_insert_into_category_hierarchy_table_with_defaults. Inserted 9854 records
+2025-01-06 15:46:55,397 - INFO - Starting get_product_ids_by_name with 9854 records
+2025-01-06 15:46:56,110 - INFO - Found matches for 1679 out of 9854 records
+2025-01-06 15:46:56,113 - INFO - Starting bulk_insert_into_product_category_table with 9854 records
+2025-01-06 15:46:57,717 - INFO - Inserting 8269 new records after filtering out 122960 existing records

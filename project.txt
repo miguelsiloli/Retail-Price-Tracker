@@ -1,0 +1,159 @@
+# Data Pipeline Project
+
+## Description
+
+This projects scraps Pingo Doce, Continente and Auchan (so far), uploads to s3 and creates a structured SQL database. 
+This workflow is scheduled an hosted with github actions.
+
+## Objectives
+
+- Scrap data from html/http sources 
+- Save this data in S3 buckets raw
+- Create a pipeline which loads data from S3 buckets
+- Create a transform pipeline which preprocesses and structures the data
+- Create great-expectations data quality audits before inserting the data in SQL
+- Create a data interface class which inserts data in SQL according to data schema
+- Good practices of continuous integration
+- Employ pipeline design patterns which ease debugging
+
+## SQL database schema
+
+[
+  {
+    "table_schema": "public",
+    "table_name": "category_hierarchy",
+    "column_name": "category_id",
+    "is_pk": "PRIMARY KEY",
+    "is_fk": " "
+  },
+  {
+    "table_schema": "public",
+    "table_name": "category_hierarchy",
+    "column_name": "category_level1",
+    "is_pk": " ",
+    "is_fk": " "
+  },
+  {
+    "table_schema": "public",
+    "table_name": "category_hierarchy",
+    "column_name": "category_level2",
+    "is_pk": " ",
+    "is_fk": " "
+  },
+  {
+    "table_schema": "public",
+    "table_name": "category_hierarchy",
+    "column_name": "category_level3",
+    "is_pk": " ",
+    "is_fk": " "
+  },
+  {
+    "table_schema": "public",
+    "table_name": "product",
+    "column_name": "product_id_pk",
+    "is_pk": "PRIMARY KEY",
+    "is_fk": " "
+  },
+  {
+    "table_schema": "public",
+    "table_name": "product",
+    "column_name": "product_id",
+    "is_pk": " ",
+    "is_fk": " "
+  },
+  {
+    "table_schema": "public",
+    "table_name": "product",
+    "column_name": "product_name",
+    "is_pk": " ",
+    "is_fk": " "
+  },
+  {
+    "table_schema": "public",
+    "table_name": "product",
+    "column_name": "source",
+    "is_pk": " ",
+    "is_fk": " "
+  },
+  {
+    "table_schema": "public",
+    "table_name": "product_category",
+    "column_name": "product_id_pk",
+    "is_pk": "PRIMARY KEY",
+    "is_fk": "FOREIGN KEY"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "product_category",
+    "column_name": "category_id",
+    "is_pk": "PRIMARY KEY",
+    "is_fk": "FOREIGN KEY"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "product_pricing",
+    "column_name": "product_id_pk",
+    "is_pk": " ",
+    "is_fk": "FOREIGN KEY"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "product_pricing",
+    "column_name": "price_integer",
+    "is_pk": " ",
+    "is_fk": " "
+  },
+  {
+    "table_schema": "public",
+    "table_name": "product_pricing",
+    "column_name": "price_decimal",
+    "is_pk": " ",
+    "is_fk": " "
+  },
+  {
+    "table_schema": "public",
+    "table_name": "product_pricing",
+    "column_name": "price_currency",
+    "is_pk": " ",
+    "is_fk": " "
+  },
+  {
+    "table_schema": "public",
+    "table_name": "product_pricing",
+    "column_name": "timestamp",
+    "is_pk": " ",
+    "is_fk": " "
+  }
+]
+
+## Project Structure
+- 📁 continente_price_tracker/
+  - 📁 notebooks/
+  - 📁 src/
+    - 📁 db/
+      - 📁 ingestion/
+        - 📁 __pycache__/
+        - 📄 __init__.py
+        - 📄 ge.py
+        - 📄 preprocessing.py
+        - 📄 transformer.py
+        - 📄 utils.py
+    - 📁 models/
+      - 📁 __pycache__/
+      - 📄 __init__.py
+      - 📄 ingestion.py
+      - 📄 main.py
+      - 📁 object_storage/
+        - 📁 scraper/
+          - 📄 __init__.py
+          - 📄 auchan.py
+          - 📄 catalogo.py
+          - 📄 pingo_doce.py
+        - 📄 __init__.py
+        - 📄 main.py
+    - 📄 __init__.py
+    - 📄 logger.py
+    - 📄 main_concurrency.py
+    - 📄 utils.py
+
+
