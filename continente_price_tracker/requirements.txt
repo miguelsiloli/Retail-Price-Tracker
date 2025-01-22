@@ -16,6 +16,7 @@ boto3
 wheel 
 setuptools 
 requests
+b2sdk
 
 # backwards compatibility
 pathlib2

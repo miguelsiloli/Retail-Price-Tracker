@@ -163,10 +163,5 @@ def process_data_and_generate_report(folder_name):
 # List of stores to process concurrently
 stores = ["continente", "pingo_doce", "auchan"]
 
-# # Using concurrent.futures.ThreadPoolExecutor to run the tasks concurrently
-# with concurrent.futures.ThreadPoolExecutor() as executor:
-#     # Map the process_data_and_generate_report function to each store
-#     executor.map(process_data_and_generate_report, stores)
-
 for store in stores:
     process_data_and_generate_report(store)
