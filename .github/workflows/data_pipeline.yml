@@ -16,7 +16,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          ref: integration-branch  # Specify the integration branch
+          ref: sql-integration  # Specify the integration branch
 
       - name: Set up Python
         uses: actions/setup-python@v2
