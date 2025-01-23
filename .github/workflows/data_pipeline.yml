@@ -45,6 +45,10 @@ jobs:
           echo "SUPABASE_ENDPOINT=${{ secrets.SUPABASE_ENDPOINT }}" >> continente_price_tracker/.env
           echo "SUPABASE_REGION=${{ secrets.SUPABASE_REGION }}" >> continente_price_tracker/.env
           echo "SUPABASE_BUCKET_NAME=${{ secrets.SUPABASE_BUCKET_NAME }}" >> continente_price_tracker/.env
+            # Adding B2 variables
+          echo "B2_KEY_ID=${{ secrets.B2_KEY_ID }}" >> continente_price_tracker/.env
+          echo "B2_PASSWORD=${{ secrets.B2_PASSWORD }}" >> continente_price_tracker/.env
+          echo "B2_BUCKET=${{ secrets.B2_BUCKET }}" >> continente_price_tracker/.env
 
       - name: Run data pipeline
         env:
