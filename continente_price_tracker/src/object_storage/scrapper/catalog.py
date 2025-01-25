@@ -154,7 +154,7 @@ def fetch_page(start, sz, cgid, pmin, srule):
 # Main function to fetch all products for a given category
 logger = setup_logger("logs/continente_scraper.log")
 
-@retry_on_failure(retries=3, delay=360)
+# @retry_on_failure(retries=3, delay=360)
 def fetch_all_products_for_category(cgid, sz=216, pmin="0.01", srule="FRESH-Peixaria"):
     logger.info(f"Starting to fetch products for category: {cgid}")
     products = []

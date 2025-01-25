@@ -1,60 +1,58 @@
 name: Data Pipeline 2
-
 on:
-  workflow_dispatch: # Allows manual triggering from GitHub UI
+  workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *' # Runs daily at midnight UTC
-
+    - cron: '0 0 * * *'
 jobs:
   run-data-pipeline:
     runs-on: ubuntu-latest
-
     permissions:
-      contents: write  # Grants write access to the repository contents
-
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          ref: integration-branch  # Specify the integration branch
-
+          ref: sql-integration
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.10.6' # Use the version compatible with your code
-
+          python-version: '3.10.6'
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install libpq-dev
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r continente_price_tracker/requirements.txt
-
       - name: Create .env file
         run: |
           echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" >> .env
           echo "USER=${{ secrets.USER }}" >> .env
           echo "PASSWORD=${{ secrets.PASSWORD }}" >> .env
           echo "HOST=${{ secrets.HOST }}" >> .env
-
           echo "SUPABASE_ACCESS_KEY_ID=${{ secrets.SUPABASE_ACCESS_KEY_ID }}" >> continente_price_tracker/.env
           echo "SUPABASE_SECRET_ACCESS_KEY=${{ secrets.SUPABASE_SECRET_ACCESS_KEY }}" >> continente_price_tracker/.env
           echo "SUPABASE_ENDPOINT=${{ secrets.SUPABASE_ENDPOINT }}" >> continente_price_tracker/.env
           echo "SUPABASE_REGION=${{ secrets.SUPABASE_REGION }}" >> continente_price_tracker/.env
           echo "SUPABASE_BUCKET_NAME=${{ secrets.SUPABASE_BUCKET_NAME }}" >> continente_price_tracker/.env
-
-      - name: Run data pipeline
+          echo "B2_KEY_ID=${{ secrets.B2_KEY_ID }}" >> continente_price_tracker/.env
+          echo "B2_PASSWORD=${{ secrets.B2_PASSWORD }}" >> continente_price_tracker/.env
+          echo "B2_BUCKET=${{ secrets.B2_BUCKET }}" >> continente_price_tracker/.env
+      - name: Run data pipeline and upload
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB }}
         run: |
-          python continente_price_tracker/src/main.py || true 
-          python continente_price_tracker/src/sql/main.py
-
+          if python continente_price_tracker/src/object_storage/main.py; then
+            python continente_price_tracker/src/db/upload_from_b2.py
+          fi
       - name: Commit and push CSV files
         if: success()
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout integration-branch
-          git add .
+          git checkout main
+          git add data/
           timestamp=$(date +'%Y-%m-%d %H:%M:%S')
-          git commit -m "Update CSV files - $timestamp" || echo "No changes to commit"
-          git push origin integration-branch
+          git commit -m "Update data files - $timestamp" || echo "No changes to commit"
+          git push origin main

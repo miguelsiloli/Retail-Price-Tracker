@@ -7,14 +7,14 @@ from pandas_profiling import ProfileReport
 import pandas as pd
 import re
 from ingestion.db_connector import PostgresConnector
-from ingestion.transforms import expand_product_fields
+from ingestion.transforms import concat_csv_from_b2
 
 connector = PostgresConnector()
 
 # Define a function to load and process data for each store
 def process_data_and_generate_report(folder_name):
     # Load the raw data
-    data = concat_csv_from_supabase(folder_name=folder_name)
+    data = concat_csv_from_b2(folder_name=folder_name)
     
     # Standardize the data
     std = ProductDataStandardizer()
@@ -64,6 +64,8 @@ def process_data_and_generate_report(folder_name):
 
 # List of stores to process concurrently
 stores = ["continente", "pingo_doce", "auchan"]
+current_date = datetime.now().strftime("%Y%m%d")
 
 for store in stores:
-    process_data_and_generate_report(store)
+   store_with_date = f"{store}_{current_date}"
+   process_data_and_generate_report(store_with_date)
