@@ -7,7 +7,9 @@ from pandas_profiling import ProfileReport
 import pandas as pd
 import re
 from ingestion.db_connector import PostgresConnector
-from ingestion.transforms import concat_csv_from_b2
+from ingestion.transforms import expand_product_fields
+from ingestion.utils import concat_csv_from_b2
+from datetime import datetime
 
 connector = PostgresConnector()
 
@@ -38,15 +40,15 @@ def process_data_and_generate_report(folder_name):
     )
     
     # Sample data for profile report
-    sampled_data = standardized_data.sample(
-        n=min(int(len(standardized_data)*0.2), 10000)
-    )
+    # sampled_data = standardized_data.sample(
+    #     n=min(int(len(standardized_data)*0.2), 10000)
+    # )
     
     # Save standardized data
-    standardized_data.to_csv(
-        f"standardized_data_{folder_name}.csv", 
-        index=False
-    )
+    # standardized_data.to_csv(
+    #     f"standardized_data_{folder_name}.csv", 
+    #     index=False
+    # )
     
     # Generate the profile report
     # profile = ProfileReport(
@@ -63,9 +65,9 @@ def process_data_and_generate_report(folder_name):
     return standardized_data
 
 # List of stores to process concurrently
-stores = ["continente", "pingo_doce", "auchan"]
-current_date = datetime.now().strftime("%Y%m%d")
+stores = ["continente"] #, "pingo_doce", "auchan"
+# current_date = datetime.now().strftime("%Y%m%d")
 
 for store in stores:
-   store_with_date = f"{store}_{current_date}"
+   store_with_date = f"{store}" # /{current_date}
    process_data_and_generate_report(store_with_date)

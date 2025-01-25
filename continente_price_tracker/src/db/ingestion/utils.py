@@ -137,7 +137,3 @@ def concat_csv_from_b2(folder_name):
         return combined_df
     else:
         raise Exception("No CSV files found")
-
-
-df = concat_csv_from_b2('continente/20250125')
-print(df)
