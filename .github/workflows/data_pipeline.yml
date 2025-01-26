@@ -54,23 +54,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB }}
         run: |
-          python continente_price_tracker/src/object_storage/main.py
+          if python continente_price_tracker/src/object_storage/main.py; then
+            python continente_price_tracker/src/db/upload_from_b2.py
+          fi
 
-      - name: Commit and push CSV files
-        if: success()
-        run: |
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Checkout the main branch to commit data files to the main branch
-          git checkout main
-          
-          # Add the new files in the /data directory
-          git add data/
-          
-          # Commit the changes
-          timestamp=$(date +'%Y-%m-%d %H:%M:%S')
-          git commit -m "Update data files - $timestamp" || echo "No changes to commit"
-          
-          # Push the changes to the main branch
-          git push origin main
