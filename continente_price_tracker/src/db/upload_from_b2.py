@@ -3,7 +3,6 @@ from ingestion.utils import concat_csv_from_supabase
 from ingestion.preprocessing import ProductDataStandardizer
 from typing import Dict, Union, Optional
 from io import StringIO
-from pandas_profiling import ProfileReport
 import pandas as pd
 import re
 from ingestion.db_connector import PostgresConnector
