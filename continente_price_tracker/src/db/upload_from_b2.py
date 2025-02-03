@@ -64,7 +64,7 @@ def process_data_and_generate_report(folder_name):
     return standardized_data
 
 # List of stores to process concurrently
-stores = ["continente"] #, "pingo_doce", "auchan"
+stores = ["continente", "pingo_doce", "auchan"] #, 
 # current_date = datetime.now().strftime("%Y%m%d")
 
 for store in stores:
