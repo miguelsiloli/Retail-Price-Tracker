@@ -9,6 +9,7 @@ from ingestion.db_connector import PostgresConnector
 from ingestion.transforms import expand_product_fields
 from ingestion.utils import concat_csv_from_b2
 from datetime import datetime
+import os
 
 connector = PostgresConnector()
 
@@ -59,12 +60,32 @@ def process_data_and_generate_report(folder_name):
     # report_filename = f"report_{folder_name}.html"
     # profile.to_file(report_filename)
 
-    connector.insert_data(standardized_data)
+    inserted_products = connector.insert_data(standardized_data)
+    return inserted_products
 
-# List of stores to process concurrently
-stores = ["continente", "pingo_doce", "auchan"] #, 
-# current_date = datetime.now().strftime("%Y%m%d")
 
-for store in stores:
-   store_with_date = f"{store}" # /{current_date}
-   process_data_and_generate_report(store_with_date)
+if __name__ == "__main__":
+    # List of stores to process concurrently
+    stores = ["continente", "pingo_doce", "auchan"] #, 
+    # current_date = datetime.now().strftime("%Y%m%d")
+
+    # Process each store and concatenate the results
+    for store in stores:
+        store_with_date = f"{store}"  # /{current_date}
+        # Get the DataFrame returned from processing the store's data
+        store_products = process_data_and_generate_report(store_with_date)
+        
+        # Concatenate with the main DataFrame
+        if inserted_products.empty:
+            inserted_products = store_products
+        else:
+            inserted_products = pd.concat([inserted_products, store_products], ignore_index=True)
+
+    # Define artifact path - using a shared volume that will be accessible by the next task
+    artifact_dir = "/shared_data/artifacts"
+    os.makedirs(artifact_dir, exist_ok=True)
+
+    # Save the DataFrame as CSV
+    artifact_path = os.path.join(artifact_dir, "inserted_products.csv") # take product_name column
+    inserted_products.to_csv(artifact_path, index=False)
+    print(f"Saved {len(inserted_products)} products to {artifact_path}")

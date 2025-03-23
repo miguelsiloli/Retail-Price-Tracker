@@ -12,44 +12,76 @@ import numpy as np
 
 load_dotenv()
 
-# Accessing the variables
-database_name = os.getenv("DATABASE_NAME")
-user = os.getenv("USER")
-password = os.getenv("PASSWORD")
-host = os.getenv("HOST")
-
-
 class PostgresConnector:
     def __init__(
         self,
-        host: str = host,
-        database: str = database_name,
-        user: str = user,
-        password: str = password,
+        host: str = os.getenv("HOST"),
+        database: str = os.getenv("DATABASE_NAME"),
+        user: str = os.getenv("USER"),
+        password: str = os.getenv("PASSWORD"),
         port: int = 5432,
-        batch_size: int = 5000
+        batch_size: int = 5000,
+        use_pooler: bool = True  # Added flag to enable/disable pooler
     ):
-        """Initialize PostgreSQL connector with connection parameters."""
-        self.connection_params = {
-            "host": host,
-            "database": database,
-            "user": user,
-            "password": password,
-            "port": port
-        }
-        self.batch_size = batch_size
+        """Initialize PostgreSQL connector with connection parameters.
+        
+        Args:
+            host: Database host address
+            database: Database name
+            user: Database user
+            password: Database password
+            port: Database port
+            batch_size: Number of records to process in a batch
+            use_pooler: Whether to use Supabase session pooler for IPv4 compatibility
+        """
         self.logger = logging.getLogger(__name__)
-
-    def connect(self) -> psycopg2.extensions.connection:
-        """Create and return a database connection."""
-        # Force TCP connection by explicitly setting sslmode
-        connection_params = self.connection_params.copy()
-        connection_params['sslmode'] = 'prefer'
+        self.batch_size = batch_size
         
-        # Print connection info for debugging (remove sensitive info in production)
-        print(f"Connecting to: {connection_params['host']}:{connection_params['port']} as {connection_params['user']}")
-        
-        return psycopg2.connect(**connection_params)
+        # Determine if we should use the IPv4 session pooler
+        if use_pooler:
+            # Extract project reference from host
+            # Original host format: db.ahluezrirjxhplqwvspy.supabase.co
+            # We need to extract 'ahluezrirjxhplqwvspy' for pooler connection
+            project_ref = host.split('.')[1]
+            
+            # Build the connection string for session pooler
+            # Using session pooler (port 5432) instead of transaction pooler (port 6543)
+            # because session pooler maintains persistent connections which is better
+            # for most application use cases that aren't serverless functions
+            pooler_host = "aws-0-us-east-1.pooler.supabase.com"
+            pooler_user = f"postgres.{project_ref}"
+            
+            self.logger.info("Using Supabase Session Pooler for IPv4 compatibility")
+            
+            # Store connection parameters
+            self.connection_params = {
+                "host": pooler_host,
+                "database": database,
+                "user": pooler_user,
+                "password": password,
+                "port": port  # Using 5432 for session pooler
+            }
+            
+            # Also store as connection string for convenience
+            self.connection_string = f"postgresql://{pooler_user}:{password}@{pooler_host}:{port}/{database}"
+        else:
+            # Use direct connection (IPv6 only)
+            self.logger.info("Using direct connection (requires IPv6 support)")
+            self.connection_params = {
+                "host": host,
+                "database": database,
+                "user": user,
+                "password": password,
+                "port": port
+            }
+            self.connection_string = f"postgresql://{user}:{password}@{host}:{port}/{database}"
+            
+    def connect(self):
+        """Establish a connection to the PostgreSQL database."""
+        self.logger.info(f"Connecting to PostgreSQL database...")
+        conn = psycopg2.connect(**self.connection_params)
+        self.logger.info("Successfully connected!")
+        return conn
 
     def _convert_to_list(self, df: pd.DataFrame, columns: list) -> list:
         """Convert DataFrame columns to list of tuples, handling NULL values."""
@@ -92,18 +124,70 @@ class PostgresConnector:
         hex_hash = hashlib.md5(combined.encode()).hexdigest()[:8]
         return int(hex_hash, 16) & 0x7FFFFFFF  # Ensure positive 32-bit integer
 
-    def insert_data(self, df: pd.DataFrame) -> None:
+    def insert_data(self, df: pd.DataFrame) -> pd.DataFrame:
         """
-        Insert data from DataFrame into PostgreSQL tables.
+        Insert data from DataFrame into PostgreSQL tables and return the inserted products.
         
         Args:
-            df: DataFrame with columns [product_id, product_name, product_price, 
-                category_level1, category_level2, category_level3, timestamp, 
+            df: DataFrame with columns [product_id, product_name, product_price,
+                category_level1, category_level2, category_level3, timestamp,
                 source, quantity, qty_unit, weight, weight_unit]
+                
+        Returns:
+            pd.DataFrame: DataFrame containing the successfully inserted products
         """
         if df.empty:
             self.logger.warning("Empty DataFrame provided, skipping insertion")
-            return
+            return pd.DataFrame()  # Return empty DataFrame
+            
+        # Prepare the data
+        df['product_id_pk'] = df.apply(
+            lambda x: self.generate_product_id_pk(x['product_id'], x['source']),
+            axis=1
+        )
+        df['category_id'] = df.apply(
+            lambda x: self.generate_category_id(
+                x['category_level1'],
+                x['category_level2'],
+                x['category_level3']
+            ),
+            axis=1
+        )
+        
+        # Split price into integer and decimal parts
+        df['price_integer'] = df['product_price'].astype(float).astype(int)
+        df['price_decimal'] = ((df['product_price'].astype(float) % 1) * 100).astype(int)
+        df['price_currency'] = 'EUR'  # Assuming EUR as default currency
+        
+        inserted_products = pd.DataFrame()  # Initialize return DataFrame
+        
+        with self.connect() as conn:
+            with conn.cursor() as cur:
+                try:
+                    # Insert category hierarchy
+                    self._insert_category_hierarchy(cur, df)
+                    
+                    # Insert products
+                    self._insert_products(cur, df)
+                    
+                    # Insert product categories
+                    self._insert_product_categories(cur, df)
+                    
+                    # Insert product pricing
+                    self._insert_product_pricing(cur, df)
+                    
+                    conn.commit()
+                    self.logger.info(f"Successfully inserted {len(df)} records")
+                    
+                    # Create a copy of the original DataFrame to return
+                    inserted_products = df.copy()
+                    
+                except Exception as e:
+                    conn.rollback()
+                    self.logger.error(f"Error inserting data: {str(e)}")
+                    raise
+        
+        return inserted_products
 
         # Prepare the data
         df['product_id_pk'] = df.apply(
