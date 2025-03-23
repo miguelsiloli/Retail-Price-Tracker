@@ -42,7 +42,14 @@ class PostgresConnector:
 
     def connect(self) -> psycopg2.extensions.connection:
         """Create and return a database connection."""
-        return psycopg2.connect(**self.connection_params)
+        # Force TCP connection by explicitly setting sslmode
+        connection_params = self.connection_params.copy()
+        connection_params['sslmode'] = 'prefer'
+        
+        # Print connection info for debugging (remove sensitive info in production)
+        print(f"Connecting to: {connection_params['host']}:{connection_params['port']} as {connection_params['user']}")
+        
+        return psycopg2.connect(**connection_params)
 
     def _convert_to_list(self, df: pd.DataFrame, columns: list) -> list:
         """Convert DataFrame columns to list of tuples, handling NULL values."""

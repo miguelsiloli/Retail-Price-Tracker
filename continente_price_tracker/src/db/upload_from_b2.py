@@ -61,8 +61,6 @@ def process_data_and_generate_report(folder_name):
 
     connector.insert_data(standardized_data)
 
-    return standardized_data
-
 # List of stores to process concurrently
 stores = ["continente", "pingo_doce", "auchan"] #, 
 # current_date = datetime.now().strftime("%Y%m%d")
