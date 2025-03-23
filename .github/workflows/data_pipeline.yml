@@ -35,10 +35,10 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" >> .env
-          echo "USER=${{ secrets.USER }}" >> .env
-          echo "PASSWORD=${{ secrets.PASSWORD }}" >> .env
-          echo "HOST=${{ secrets.HOST }}" >> .env
+          echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" >> continente_price_tracker/.env
+          echo "USER=${{ secrets.USER }}" >> continente_price_tracker/.env
+          echo "PASSWORD=${{ secrets.PASSWORD }}" >> continente_price_tracker/.env
+          echo "HOST=${{ secrets.HOST }}" >> continente_price_tracker/.env
 
           echo "SUPABASE_ACCESS_KEY_ID=${{ secrets.SUPABASE_ACCESS_KEY_ID }}" >> continente_price_tracker/.env
           echo "SUPABASE_SECRET_ACCESS_KEY=${{ secrets.SUPABASE_SECRET_ACCESS_KEY }}" >> continente_price_tracker/.env
