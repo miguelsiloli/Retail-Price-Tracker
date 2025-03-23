@@ -56,5 +56,6 @@ jobs:
         run: |
           if python continente_price_tracker/src/object_storage/main_concurrency.py; then
             python continente_price_tracker/src/db/upload_from_b2.py
+            python continente_price_tracker/src/db/augmentation_main.py
           fi
 
