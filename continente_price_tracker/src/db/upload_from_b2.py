@@ -63,29 +63,27 @@ def process_data_and_generate_report(folder_name):
     inserted_products = connector.insert_data(standardized_data)
     return inserted_products
 
-
 if __name__ == "__main__":
     # List of stores to process concurrently
-    stores = ["continente", "pingo_doce", "auchan"] #, 
+    stores = ["continente", "pingo_doce", "auchan"] #,
     # current_date = datetime.now().strftime("%Y%m%d")
-
     # Process each store and concatenate the results
+    all_products = pd.DataFrame()  # Initialize empty DataFrame to store all products
+    
     for store in stores:
-        store_with_date = f"{store}"  # /{current_date}
+        store_with_date = f"{store}" # /{current_date}
         # Get the DataFrame returned from processing the store's data
         store_products = process_data_and_generate_report(store_with_date)
-        
         # Concatenate with the main DataFrame
-        if inserted_products.empty:
-            inserted_products = store_products
+        if all_products.empty:
+            all_products = store_products
         else:
-            inserted_products = pd.concat([inserted_products, store_products], ignore_index=True)
-
-    # Define artifact path - using a shared volume that will be accessible by the next task
-    artifact_dir = "/shared_data/artifacts"
-    os.makedirs(artifact_dir, exist_ok=True)
-
-    # Save the DataFrame as CSV
-    artifact_path = os.path.join(artifact_dir, "inserted_products.csv") # take product_name column
-    inserted_products.to_csv(artifact_path, index=False)
-    print(f"Saved {len(inserted_products)} products to {artifact_path}")
+            all_products = pd.concat([all_products, store_products], ignore_index=True)
+        
+        # Define artifact path - using a shared volume that will be accessible by the next task
+        artifact_dir = "/shared_data/artifacts"
+        os.makedirs(artifact_dir, exist_ok=True)
+        # Save the DataFrame as CSV
+        artifact_path = os.path.join(artifact_dir, "inserted_products.csv") # take product_name column
+        all_products.to_csv(artifact_path, index=False)
+        print(f"Saved {len(all_products)} products to {artifact_path}")
