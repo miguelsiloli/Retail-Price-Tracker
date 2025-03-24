@@ -3,6 +3,7 @@ import os
 import json
 import time
 import csv
+from typing import List, Dict, Any
 
 # Set up the API key
 os.environ["GEMINI_API_KEY"] = "AIzaSyAuA48i-foDU79f8iauQsDRtl9zCafMZE8"
