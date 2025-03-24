@@ -39,10 +39,7 @@ class PostgresConnector:
         
         # Determine if we should use the IPv4 session pooler
         if use_pooler:
-            # Extract project reference from host
-            # Original host format: db.ahluezrirjxhplqwvspy.supabase.co
-            # We need to extract 'ahluezrirjxhplqwvspy' for pooler connection
-            project_ref = host.split('.')[1]
+            project_ref = 'ahluezrirjxhplqwvspy'
             
             # Build the connection string for session pooler
             # Using session pooler (port 5432) instead of transaction pooler (port 6543)
