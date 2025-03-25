@@ -38,27 +38,6 @@ def process_data_and_generate_report(folder_name):
         how='left', 
         on='product_name'
     )
-    
-    # Sample data for profile report
-    # sampled_data = standardized_data.sample(
-    #     n=min(int(len(standardized_data)*0.2), 10000)
-    # )
-    
-    # Save standardized data
-    # standardized_data.to_csv(
-    #     f"standardized_data_{folder_name}.csv", 
-    #     index=False
-    # )
-    
-    # Generate the profile report
-    # profile = ProfileReport(
-    #     sampled_data, 
-    #     title=f"Data Quality Report for {folder_name}"
-    # )
-    
-    # Save the report to file
-    # report_filename = f"report_{folder_name}.html"
-    # profile.to_file(report_filename)
 
     inserted_products = connector.insert_data(standardized_data)
     return inserted_products
@@ -71,6 +50,7 @@ if __name__ == "__main__":
     all_products = pd.DataFrame()  # Initialize empty DataFrame to store all products
     
     for store in stores:
+        print(f"Stores to process: {stores}")
         store_with_date = f"{store}" # /{current_date}
         # Get the DataFrame returned from processing the store's data
         store_products = process_data_and_generate_report(store_with_date)
