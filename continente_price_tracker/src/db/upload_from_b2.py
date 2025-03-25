@@ -17,7 +17,6 @@ connector = PostgresConnector()
 def process_data_and_generate_report(folder_name):
     # Load the raw data
     data = concat_csv_from_b2(folder_name=folder_name)
-    print(data)
     
     # Standardize the data
     std = ProductDataStandardizer()
@@ -40,8 +39,8 @@ def process_data_and_generate_report(folder_name):
         on='product_name'
     )
 
-    inserted_products = connector.insert_data(standardized_data)
-    return inserted_products
+    connector.insert_data(standardized_data)
+    return standardized_data
 
 if __name__ == "__main__":
     # List of stores to process concurrently
