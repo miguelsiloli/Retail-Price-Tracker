@@ -81,7 +81,7 @@ if __name__ == "__main__":
             all_products = pd.concat([all_products, store_products], ignore_index=True)
         
         # Define artifact path - using a shared volume that will be accessible by the next task
-        artifact_dir = "/shared_data/artifacts"
+        artifact_dir = "./shared_data/artifacts"
         os.makedirs(artifact_dir, exist_ok=True)
         # Save the DataFrame as CSV
         artifact_path = os.path.join(artifact_dir, "inserted_products.csv") # take product_name column

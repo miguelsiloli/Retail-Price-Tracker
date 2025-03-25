@@ -132,7 +132,7 @@ def write_to_csv(data, output_file, mode='a'):
         for item in data:
             writer.writerow(item)
 
-def process_all(input_file = "/shared_data/artifacts/inserted_products.csv", sources = ["continente", "auchan", "pingo_doce"]):
+def process_all(input_file = "./shared_data/artifacts/inserted_products.csv", sources = ["continente", "auchan", "pingo_doce"]):
     # Read the input file
     df2 = pd.read_csv(input_file)
     
@@ -143,7 +143,7 @@ def process_all(input_file = "/shared_data/artifacts/inserted_products.csv", sou
     all_results = []
 
     for source in sources:
-        df = df2[df2["product_name"] == source]
+        df = df2[df2["source"] == source]
     
         # Get the list of products
         products = df['product_name'].tolist()
