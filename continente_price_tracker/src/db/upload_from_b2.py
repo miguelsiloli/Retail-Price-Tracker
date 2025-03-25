@@ -17,6 +17,7 @@ connector = PostgresConnector()
 def process_data_and_generate_report(folder_name):
     # Load the raw data
     data = concat_csv_from_b2(folder_name=folder_name)
+    print(data)
     
     # Standardize the data
     std = ProductDataStandardizer()
