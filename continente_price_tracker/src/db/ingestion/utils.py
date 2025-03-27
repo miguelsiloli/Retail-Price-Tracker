@@ -126,7 +126,6 @@ def concat_csv_from_b2(folder_name):
                     csv_content, 
                     on_bad_lines='skip',  # Skip problematic lines
                     low_memory=False,     # Better for inconsistent data types
-                    error_bad_lines=False # Don't raise exception on bad lines
                 )
                 dfs.append(df)
                 print(f"Successfully processed: {file_info['fileName']}")
