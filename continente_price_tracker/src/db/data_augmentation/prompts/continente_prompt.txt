@@ -2,130 +2,128 @@ You are an expert product categorization assistant that classifies Portuguese re
 
 1. product_name: The full, original product name
 2. product_type: The specific product category (should be specific enough but not overly granular)
-3. brand: The brand name (use \"Generic\" if no clear brand is identifiable)
+3. quantity_weight: The numerical weight/volume value (extract just the number)
+4. quantity_units: The number of items in the package (default to 1 if not specified)
+5. units: The unit of measurement (g, kg, ml, L, etc.)
 
 Follow these guidelines:
 - Base product types should be specific common products with little room for subdivision (e.g., \"Cerveja\", \"Água Gaseificada\", \"Vinho Tinto\")
 - Don't use overly broad categories like just \"Meat\" or \"Fish\" - be more specific
 - For beverages, maintain distinctions like \"Vinho Tinto\" vs \"Vinho Branco\" when appropriate
-- For brands, extract actual brand names where present, otherwise use \"Generic\"
-- Descriptors like \"Zero\", \"Mini\", \"Frutos Vermelhos\" are not brands
-- Beer styles like \"Stout\" or \"Radler\" should be treated as brands when they indicate a specific product line
+- Carefully extract quantity information in the format \"5x70 g\" as quantity_units=5, quantity_weight=70, units=\"g\"
+- For single items, use quantity_units=1
+- If quantity information is missing, use null for quantity_weight and units, but always use 1 for quantity_units
 
 Here are some correctly categorized examples:
 
+FROZEN FOODS:
+Input: Pastéis de Bacalhau Congelados Fritar Pingo Doce 12×32 g
+Output: {\"product_name\": \"Pastéis de Bacalhau Congelados Fritar Pingo Doce 12×32 g\", \"product_type\": \"Pastéis de Bacalhau\", \"quantity_weight\": 32, \"quantity_units\": 12, \"units\": \"g\"}
+
+Input: Preparado para Smoothie Congelado com Banana, F. Vermelhos, Uvas e Açaí Pingo Doce 450 g
+Output: {\"product_name\": \"Preparado para Smoothie Congelado com Banana, F. Vermelhos, Uvas e Açaí Pingo Doce 450 g\", \"product_type\": \"Preparado para Smoothie\", \"quantity_weight\": 450, \"quantity_units\": 1, \"units\": \"g\"}
+
+Input: Pizza Deep Pan de Pepperoni e Fiambre Pingo Doce 530 g
+Output: {\"product_name\": \"Pizza Deep Pan de Pepperoni e Fiambre Pingo Doce 530 g\", \"product_type\": \"Pizza\", \"quantity_weight\": 530, \"quantity_units\": 1, \"units\": \"g\"}
+
+Input: Almôndegas de Carne de Vaca com Molho de Tomate Pingo Doce 420 g
+Output: {\"product_name\": \"Almôndegas de Carne de Vaca com Molho de Tomate Pingo Doce 420 g\", \"product_type\": \"Almôndegas\", \"quantity_weight\": 420, \"quantity_units\": 1, \"units\": \"g\"}
+
+DAIRY & DESSERTS:
+Input: Gelados Sandwich Cookies & Cream Pingo Doce 4×135 ml
+Output: {\"product_name\": \"Gelados Sandwich Cookies & Cream Pingo Doce 4×135 ml\", \"product_type\": \"Gelados\", \"quantity_weight\": 135, \"quantity_units\": 4, \"units\": \"ml\"}
+
+Input: Sorbet de Framboesa Iguarias Pingo Doce 1L
+Output: {\"product_name\": \"Sorbet de Framboesa Iguarias Pingo Doce 1L\", \"product_type\": \"Sorbet\", \"quantity_weight\": 1, \"quantity_units\": 1, \"units\": \"L\"}
+
+Input: Gelado de Caramelo Salgado com Macadâmia Dairy Free Pingo Doce 500 ml
+Output: {\"product_name\": \"Gelado de Caramelo Salgado com Macadâmia Dairy Free Pingo Doce 500 ml\", \"product_type\": \"Gelado\", \"quantity_weight\": 500, \"quantity_units\": 1, \"units\": \"ml\"}
+
+Input: Iogurte Kefir 14 Cítrico
+Output: {\"product_name\": \"Iogurte Kefir 14 Cítrico\", \"product_type\": \"Iogurte\", \"quantity_weight\": null, \"quantity_units\": 1, \"units\": null}
+
 BEVERAGES:
 Input: Água Tónica Signature
-Output: {\"product_name\": \"Água Tónica Signature\", \"product_type\": \"Água Tónica\", \"brand\": \"Signature\"}
+Output: {\"product_name\": \"Água Tónica Signature\", \"product_type\": \"Água Tónica\", \"quantity_weight\": null, \"quantity_units\": 1, \"units\": null}
 
 Input: Cerveja com Álcool Stout Mini
-Output: {\"product_name\": \"Cerveja com Álcool Stout Mini\", \"product_type\": \"Cerveja\", \"brand\": \"Stout\"}
+Output: {\"product_name\": \"Cerveja com Álcool Stout Mini\", \"product_type\": \"Cerveja\", \"quantity_weight\": null, \"quantity_units\": 1, \"units\": null}
 
 Input: Água com Gás Limão
-Output: {\"product_name\": \"Água com Gás Limão\", \"product_type\": \"Água Gaseificada\", \"brand\": \"Generic\"}
+Output: {\"product_name\": \"Água com Gás Limão\", \"product_type\": \"Água Gaseificada\", \"quantity_weight\": null, \"quantity_units\": 1, \"units\": null}
 
 Input: Muralhas de Monção DOC Vinho Verde Branco
-Output: {\"product_name\": \"Muralhas de Monção DOC Vinho Verde Branco\", \"product_type\": \"Vinho Branco\", \"brand\": \"Muralhas de Monção\"}
-
-Input: Refrigerante com Gás Cola Zero
-Output: {\"product_name\": \"Refrigerante com Gás Cola Zero\", \"product_type\": \"Refrigerante\", \"brand\": \"Generic\"}
+Output: {\"product_name\": \"Muralhas de Monção DOC Vinho Verde Branco\", \"product_type\": \"Vinho Branco\", \"quantity_weight\": null, \"quantity_units\": 1, \"units\": null}
 
 Input: Néctar Manga Pack Poupança
-Output: {\"product_name\": \"Néctar Manga Pack Poupança\", \"product_type\": \"Néctar\", \"brand\": \"Generic\"}
+Output: {\"product_name\": \"Néctar Manga Pack Poupança\", \"product_type\": \"Néctar\", \"quantity_weight\": null, \"quantity_units\": 1, \"units\": null}
 
-Input: Aperitivo Aperol
-Output: {\"product_name\": \"Aperitivo Aperol\", \"product_type\": \"Aperitivo\", \"brand\": \"Aperol\"}
+Input: Refrigerante com Gás Lima Limão Zero 6×330 ml
+Output: {\"product_name\": \"Refrigerante com Gás Lima Limão Zero 6×330 ml\", \"product_type\": \"Refrigerante\", \"quantity_weight\": 330, \"quantity_units\": 6, \"units\": \"ml\"}
 
-Input: La Quintinye Vermute Extra Dry
-Output: {\"product_name\": \"La Quintinye Vermute Extra Dry\", \"product_type\": \"Vermute\", \"brand\": \"La Quintinye\"}
-
-Input: Água de Coco
-Output: {\"product_name\": \"Água de Coco\", \"product_type\": \"Água de Coco\", \"brand\": \"Generic\"}
-
-BABY & CHILD PRODUCTS:
-Input: Cadeira Auto I-Size 40-150cm Isofix Rotativa Atlas Preta
-Output: {\"product_name\": \"Cadeira Auto I-Size 40-150cm Isofix Rotativa Atlas Preta\", \"product_type\": \"Cadeira Auto\", \"brand\": \"Atlas\"}
-
-Input: Móbile Next2Dreams Bege
-Output: {\"product_name\": \"Móbile Next2Dreams Bege\", \"product_type\": \"Móbile\", \"brand\": \"Next2Dreams\"}
-
-Input: Saco de Dormir com Pernas Savana S
-Output: {\"product_name\": \"Saco de Dormir com Pernas Savana S\", \"product_type\": \"Saco de Dormir\", \"brand\": \"Savana\"}
-
-Input: Andador Blocos Polícia
-Output: {\"product_name\": \"Andador Blocos Polícia\", \"product_type\": \"Andador\", \"brand\": \"Generic\"}
-
-Input: Baby Unicórnio Mágico
-Output: {\"product_name\": \"Baby Unicórnio Mágico\", \"product_type\": \"Brinquedo\", \"brand\": \"Generic\"}
-
-FOOD PRODUCTS:
+MEAT & SEAFOOD:
 Input: Fiambre de Peito Peru Fatiado no Balcão Forno de Lenha
-Output: {\"product_name\": \"Fiambre de Peito Peru Fatiado no Balcão Forno de Lenha\", \"product_type\": \"Fiambre\", \"brand\": \"Forno de Lenha\"}
+Output: {\"product_name\": \"Fiambre de Peito Peru Fatiado no Balcão Forno de Lenha\", \"product_type\": \"Fiambre\", \"quantity_weight\": null, \"quantity_units\": 1, \"units\": null}
 
-Input: Metades de Pato
-Output: {\"product_name\": \"Metades de Pato\", \"product_type\": \"Carne de Pato\", \"brand\": \"Generic\"}
+Input: Lombo de Porco Preto Fatiado
+Output: {\"product_name\": \"Lombo de Porco Preto Fatiado\", \"product_type\": \"Carne de Porco\", \"quantity_weight\": null, \"quantity_units\": 1, \"units\": null}
 
-Input: Pão Redondo Biológico
-Output: {\"product_name\": \"Pão Redondo Biológico\", \"product_type\": \"Pão\", \"brand\": \"Generic\"}
+Input: Filetes de Pescada do Cabo MSC Congeladas Pingo Doce 400 g
+Output: {\"product_name\": \"Filetes de Pescada do Cabo MSC Congeladas Pingo Doce 400 g\", \"product_type\": \"Filetes de Pescada\", \"quantity_weight\": 400, \"quantity_units\": 1, \"units\": \"g\"}
 
-Input: Pão Gran Mix sem Glúten Biológico
-Output: {\"product_name\": \"Pão Gran Mix sem Glúten Biológico\", \"product_type\": \"Pão\", \"brand\": \"Gran Mix\"}
+Input: Miolo de Camarão 40/60 Pingo Doce 200 g
+Output: {\"product_name\": \"Miolo de Camarão 40/60 Pingo Doce 200 g\", \"product_type\": \"Miolo de Camarão\", \"quantity_weight\": 200, \"quantity_units\": 1, \"units\": \"g\"}
 
-Input: Linguado Fresco
-Output: {\"product_name\": \"Linguado Fresco\", \"product_type\": \"Peixe\", \"brand\": \"Generic\"}
+PRODUCE:
+Input: Cebola Roxa Biológica
+Output: {\"product_name\": \"Cebola Roxa Biológica\", \"product_type\": \"Cebola\", \"quantity_weight\": null, \"quantity_units\": 1, \"units\": null}
 
-Input: Bacalhôa Moscatel De Setúbal 20 Anos Superior
-Output: {\"product_name\": \"Bacalhôa Moscatel De Setúbal 20 Anos Superior\", \"product_type\": \"Vinho Moscatel\", \"brand\": \"Bacalhôa\"}
+Input: Cogumelo Pleurotus Fresco
+Output: {\"product_name\": \"Cogumelo Pleurotus Fresco\", \"product_type\": \"Cogumelo\", \"quantity_weight\": null, \"quantity_units\": 1, \"units\": null}
 
-HOUSEHOLD & PERSONAL CARE:
-Input: Almofada Anti-sufoco 35x21cm Bigo
-Output: {\"product_name\": \"Almofada Anti-sufoco 35x21cm Bigo\", \"product_type\": \"Almofada\", \"brand\": \"Bigo\"}
+Input: Banana Biológica 1 kg
+Output: {\"product_name\": \"Banana Biológica 1 kg\", \"product_type\": \"Banana\", \"quantity_weight\": 1, \"quantity_units\": 1, \"units\": \"kg\"}
 
-Input: Chinelos de Quarto Básicos Mulher Rosa
-Output: {\"product_name\": \"Chinelos de Quarto Básicos Mulher Rosa\", \"product_type\": \"Chinelos\", \"brand\": \"Generic\"}
+Input: Maçã Story Resíduo Zero 4 unidades
+Output: {\"product_name\": \"Maçã Story Resíduo Zero 4 unidades\", \"product_type\": \"Maçã\", \"quantity_weight\": null, \"quantity_units\": 4, \"units\": \"unidades\"}
 
-Input: Conjunto 7 Pares de Meias Tornozelo Mulher Multicor
-Output: {\"product_name\": \"Conjunto 7 Pares de Meias Tornozelo Mulher Multicor\", \"product_type\": \"Meias\", \"brand\": \"Generic\"}
+BAKERY & SNACKS:
+Input: Pão de Forma com Sementes de Sésamo e Linhaça com Côdea
+Output: {\"product_name\": \"Pão de Forma com Sementes de Sésamo e Linhaça com Côdea\", \"product_type\": \"Pão de Forma\", \"quantity_weight\": null, \"quantity_units\": 1, \"units\": null}
 
-Input: Cortina de Sol Auto
-Output: {\"product_name\": \"Cortina de Sol Auto\", \"product_type\": \"Cortina de Sol\", \"brand\": \"Generic\"}
+Input: Mini Tostas Integrais 250 g
+Output: {\"product_name\": \"Mini Tostas Integrais 250 g\", \"product_type\": \"Tostas\", \"quantity_weight\": 250, \"quantity_units\": 1, \"units\": \"g\"}
 
-Input: Vela em Copo Cerâmica 230g Floresta de Bambu
-Output: {\"product_name\": \"Vela em Copo Cerâmica 230g Floresta de Bambu\", \"product_type\": \"Vela\", \"brand\": \"Generic\"}
+Input: Wrap 6×62 g
+Output: {\"product_name\": \"Wrap 6×62 g\", \"product_type\": \"Wrap\", \"quantity_weight\": 62, \"quantity_units\": 6, \"units\": \"g\"}
 
-Input: Removedor de Calcário Power
-Output: {\"product_name\": \"Removedor de Calcário Power\", \"product_type\": \"Removedor de Calcário\", \"brand\": \"Power\"}
+Input: Multipack Snack de Maçã Desidratada 5×20 g
+Output: {\"product_name\": \"Multipack Snack de Maçã Desidratada 5×20 g\", \"product_type\": \"Snack de Fruta\", \"quantity_weight\": 20, \"quantity_units\": 5, \"units\": \"g\"}
 
-HEALTH & NUTRITION:
-Input: Iogurte Kefir 14 Cítrico
-Output: {\"product_name\": \"Iogurte Kefir 14 Cítrico\", \"product_type\": \"Iogurte\", \"brand\": \"Kefir 14\"}
+DAIRY & CHEESE:
+Input: Requeijão de Ovelha de Seia 2×100 g
+Output: {\"product_name\": \"Requeijão de Ovelha de Seia 2×100 g\", \"product_type\": \"Requeijão\", \"quantity_weight\": 100, \"quantity_units\": 2, \"units\": \"g\"}
 
-Input: Leite UHT Meio Gordo Manhã Levíssima sem Lactose
-Output: {\"product_name\": \"Leite UHT Meio Gordo Manhã Levíssima sem Lactose\", \"product_type\": \"Leite\", \"brand\": \"Manhã Levíssima\"}
+Input: Queijo Parmigiano Reggiano DOP Lascas 150 g
+Output: {\"product_name\": \"Queijo Parmigiano Reggiano DOP Lascas 150 g\", \"product_type\": \"Queijo\", \"quantity_weight\": 150, \"quantity_units\": 1, \"units\": \"g\"}
 
-Input: Creatina Creapure
-Output: {\"product_name\": \"Creatina Creapure\", \"product_type\": \"Suplemento\", \"brand\": \"Creapure\"}
+Input: Leite UHT Meio Gordo Manhã Levíssima sem Lactose 1L
+Output: {\"product_name\": \"Leite UHT Meio Gordo Manhã Levíssima sem Lactose 1L\", \"product_type\": \"Leite\", \"quantity_weight\": 1, \"quantity_units\": 1, \"units\": \"L\"}
 
-Input: Refeição Completa em Pó Baunilha
-Output: {\"product_name\": \"Refeição Completa em Pó Baunilha\", \"product_type\": \"Refeição em Pó\", \"brand\": \"Generic\"}
+Input: Húmus Oriental 200 g
+Output: {\"product_name\": \"Húmus Oriental 200 g\", \"product_type\": \"Húmus\", \"quantity_weight\": 200, \"quantity_units\": 1, \"units\": \"g\"}
 
-Input: Proteína Whey Concentrada de Baunilha
-Output: {\"product_name\": \"Proteína Whey Concentrada de Baunilha\", \"product_type\": \"Suplemento Proteico\", \"brand\": \"Whey\"}
+PREPARED FOODS:
+Input: Gaspacho 750 ml
+Output: {\"product_name\": \"Gaspacho 750 ml\", \"product_type\": \"Gaspacho\", \"quantity_weight\": 750, \"quantity_units\": 1, \"units\": \"ml\"}
 
-BEAUTY & PERSONAL CARE:
-Input: Palete de Sombras de Olhos Revolution x Friends Take a Drive
-Output: {\"product_name\": \"Palete de Sombras de Olhos Revolution x Friends Take a Drive\", \"product_type\": \"Sombra de Olhos\", \"brand\": \"Revolution x Friends\"}
+Input: Salada Aromática 150 g
+Output: {\"product_name\": \"Salada Aromática 150 g\", \"product_type\": \"Salada\", \"quantity_weight\": 150, \"quantity_units\": 1, \"units\": \"g\"}
 
-Input: Creme Corpo Body Milk Hidratante Nutritivo
-Output: {\"product_name\": \"Creme Corpo Body Milk Hidratante Nutritivo\", \"product_type\": \"Cuidado Corporal\", \"brand\": \"Generic\"}
+Input: Girasoli Fresco com Cogumelos e Queijo Mascarpone 250 g
+Output: {\"product_name\": \"Girasoli Fresco com Cogumelos e Queijo Mascarpone 250 g\", \"product_type\": \"Massa Recheada\", \"quantity_weight\": 250, \"quantity_units\": 1, \"units\": \"g\"}
 
-Input: Aparador Barba King C. com 3 Pentes
-Output: {\"product_name\": \"Aparador Barba King C. com 3 Pentes\", \"product_type\": \"Aparador de Barba\", \"brand\": \"King C.\"}
-
-Input: Champô Anticaspa Legend CR7
-Output: {\"product_name\": \"Champô Anticaspa Legend CR7\", \"product_type\": \"Champô\", \"brand\": \"Legend CR7\"}
-
-Input: Sérum de Olhos Revitalift Filler
-Output: {\"product_name\": \"Sérum de Olhos Revitalift Filler\", \"product_type\": \"Sérum Facial\", \"brand\": \"Revitalift\"}
+Input: Massa Folhada Light 280 g
+Output: {\"product_name\": \"Massa Folhada Light 280 g\", \"product_type\": \"Massa Folhada\", \"quantity_weight\": 280, \"quantity_units\": 1, \"units\": \"g\"}
 
 Now, please categorize the following products:
