@@ -1,0 +1,125 @@
+name: Reusable Monitoring Stats Collector
+
+on:
+  workflow_call:
+    inputs:
+      main_run_id:
+        description: 'The run_id of the workflow being monitored'
+        required: true
+        type: string
+      b2_bucket:
+        description: 'Backblaze B2 Bucket Name'
+        required: true
+        type: string
+      collection_duration_seconds:
+        description: 'How long to collect stats for (in seconds)'
+        required: false
+        type: number
+        default: 300 # Default to 5 minutes
+      sample_interval_seconds:
+        description: 'How often to sample stats (in seconds)'
+        required: false
+        type: number
+        default: 10 # Default to every 10 seconds
+      # b2_bucket_path input is no longer used for the date structure,
+      # but could be kept if you want a prefix *before* logs/infra/
+      # b2_bucket_path:
+      #   description: 'Optional prefix path within the B2 bucket'
+      #   required: false
+      #   type: string
+      #   default: ''
+    secrets:
+      b2_key_id:
+        description: 'Backblaze B2 Key ID (Access Key)'
+        required: true
+      b2_password:
+        description: 'Backblaze B2 Application Key (Secret Key)'
+        required: true
+      b2_endpoint_url:
+        description: 'Backblaze B2 S3 Endpoint URL'
+        required: true
+
+jobs:
+  collect-and-upload-stats:
+    runs-on: ubuntu-latest
+    env:
+      COLLECTION_DURATION_SECONDS: ${{ inputs.collection_duration_seconds }}
+      SAMPLE_INTERVAL_SECONDS: ${{ inputs.sample_interval_seconds }}
+      B2_BUCKET_NAME: ${{ inputs.b2_bucket }}
+      # B2_BUCKET_PREFIX: ${{ inputs.b2_bucket_path }} # Optional: If you want a prefix
+      MAIN_WORKFLOW_RUN_ID: ${{ inputs.main_run_id }}
+
+    steps:
+      # ... (Setup Python, Install AWS CLI, Configure AWS CLI steps remain the same) ...
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update && sudo apt-get install -y awscli
+
+      - name: Configure AWS CLI for Backblaze B2
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.b2_key_id }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.b2_password }}
+        run: |
+          echo "Configuring AWS CLI..."
+          aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
+          aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
+
+      # ... (Run Docker Stats Collection Script remains the same) ...
+      - name: Run Docker Stats Collection Script
+        id: collect
+        run: |
+          # --- (Existing Python script content goes here) ---
+          # --- (Make sure it outputs to stats_output.json) ---
+          echo "Starting stats collection for workflow run ${MAIN_WORKFLOW_RUN_ID}..."
+          echo "Duration: ${COLLECTION_DURATION_SECONDS}s, Interval: ${SAMPLE_INTERVAL_SECONDS}s"
+          python - <<EOF > stats_output.json
+          # PASTE THE FULL PYTHON SCRIPT FROM THE PREVIOUS RESPONSE HERE
+          import subprocess, json, time, datetime, statistics, collections, re, os
+          # ... (rest of the python script) ...
+          print(json.dumps(final_stats, indent=2))
+          EOF
+          echo "Stats collection finished. Output saved to stats_output.json"
+          echo "output_file=stats_output.json" >> $GITHUB_OUTPUT
+
+
+      - name: Upload Stats to Backblaze B2
+        env:
+           AWS_ENDPOINT_URL: ${{ secrets.b2_endpoint_url }} # Use the secret
+        run: |
+          OUTPUT_FILE="stats_output.json"
+          if [ ! -s $OUTPUT_FILE ]; then
+            echo "Warning: Stats output file is empty or does not exist. Skipping upload."
+            exit 0 # Exit step successfully if no data
+          fi
+
+          # --- PATH CONSTRUCTION ---
+          # Get current date in YYYY-MM-DD format (UTC)
+          CURRENT_DATE=$(date -u +'%Y-%m-%d')
+
+          # Define the target directory structure including the date
+          TARGET_DIRECTORY="logs/infra/${CURRENT_DATE}"
+          # Optional: Add prefix if needed: TARGET_DIRECTORY="${B2_BUCKET_PREFIX}/logs/infra/${CURRENT_DATE}"
+
+          # Create the unique filename (using detailed timestamp and run ID)
+          DETAILED_TIMESTAMP=$(date -u +"%Y%m%dT%H%M%SZ")
+          TARGET_FILENAME="run-${MAIN_WORKFLOW_RUN_ID}-${DETAILED_TIMESTAMP}-docker-stats.json"
+
+          # Construct the full S3 path
+          TARGET_S3_PATH="s3://${B2_BUCKET_NAME}/${TARGET_DIRECTORY}/${TARGET_FILENAME}"
+          # --- END PATH CONSTRUCTION ---
+
+          echo "Uploading $OUTPUT_FILE to $TARGET_S3_PATH"
+          aws s3 cp "$OUTPUT_FILE" "$TARGET_S3_PATH" --endpoint-url "$AWS_ENDPOINT_URL"
+
+          if [ $? -eq 0 ]; then
+            echo "Upload successful."
+          else
+            echo "Error: Upload failed."
+            exit 1 # Fail the workflow step if upload fails
+          fi
