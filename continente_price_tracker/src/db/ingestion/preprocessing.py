@@ -76,32 +76,78 @@ class ProductDataStandardizer:
     def standardize_timestamp(timestamp_str: str) -> datetime:
         """
         Convert various timestamp formats to standard datetime.
+        Handles formats:
+        - ISO (YYYY-MM-DD or YYYY-MM-DD HH:MM:SS)
+        - YYYYMMDD_HHMMSS
+        - YYYYMMDD
+        - YYYYMMDD.0 (from potential float conversion)
         """
+        # Ensure input is treated as a string and remove leading/trailing whitespace
+        # Handle potential pandas NaT or None which become 'NaT' or 'None' as strings
+        if pd.isna(timestamp_str):
+             raise ValueError("Input timestamp is null or NaT")
         timestamp_str = str(timestamp_str).strip()
-        
-        # Try ISO format (2025-01-06)
-        try:
-            return datetime.fromisoformat(timestamp_str)
-        except ValueError:
-            pass
-        
-        # Try format 20250106_013625
-        try:
-            if '_' in timestamp_str:
-                date_part, time_part = timestamp_str.split('_')
-                return datetime.strptime(f"{date_part}_{time_part}", "%Y%m%d_%H%M%S")
-        except ValueError:
-            pass
-        
-        # Try format 20241113 (just date)
-        try:
-            if len(timestamp_str) == 8 and timestamp_str.isdigit():
-                return datetime.strptime(timestamp_str, "%Y%m%d")
-        except ValueError:
-            pass
-            
-        raise ValueError(f"Unsupported timestamp format: {timestamp_str}")
 
+        # Handle empty string after stripping
+        if not timestamp_str:
+            raise ValueError("Input timestamp string is empty")
+
+        # --- Try parsing known formats ---
+
+        # Try ISO format (YYYY-MM-DD or including time YYYY-MM-DD HH:MM:SS etc.)
+        # Using dateutil.parser might be more robust if available,
+        # but sticking to datetime for now. This handles YYYY-MM-DD directly.
+        if '-' in timestamp_str and len(timestamp_str) >= 10:
+             try:
+                 # Attempt parsing common ISO-like variants
+                 # datetime.fromisoformat expects strict ISO 8601
+                 # Use strptime for more flexibility if needed, or dateutil.parser
+                 if 'T' in timestamp_str or ' ' in timestamp_str and ':' in timestamp_str:
+                     # Try parsing with time component
+                     try: return datetime.fromisoformat(timestamp_str.replace(' ', 'T'))
+                     except ValueError: pass # Fall through if strict ISO fails
+                 else:
+                     # Try parsing date only
+                     try: return datetime.strptime(timestamp_str.split(' ')[0].split('T')[0], "%Y-%m-%d")
+                     except ValueError: pass # Fall through
+             except ValueError:
+                 pass # Failed ISO-like, try other formats
+
+        # Try format YYYYMMDD_HHMMSS
+        if '_' in timestamp_str:
+            try:
+                # Split carefully in case there are multiple underscores (unlikely for this format)
+                parts = timestamp_str.split('_', 1)
+                if len(parts) == 2 and len(parts[0]) == 8 and parts[0].isdigit() and len(parts[1]) == 6 and parts[1].isdigit():
+                     return datetime.strptime(timestamp_str, "%Y%m%d_%H%M%S")
+            except ValueError:
+                pass # Failed YYYYMMDD_HHMMSS, try other formats
+
+        # Try format YYYYMMDD.0 (handle potential float conversion)
+        # Check specifically for '.0' ending
+        if timestamp_str.endswith('.0'):
+            try:
+                date_part = timestamp_str[:-2] # Remove the '.0'
+                if len(date_part) == 8 and date_part.isdigit():
+                    return datetime.strptime(date_part, "%Y%m%d")
+            except ValueError:
+                 pass # Failed YYYYMMDD.0 parsing, try next
+
+        # Try format YYYYMMDD (plain date, must be exactly 8 digits)
+        if len(timestamp_str) == 8 and timestamp_str.isdigit():
+            try:
+                return datetime.strptime(timestamp_str, "%Y%m%d")
+            except ValueError:
+                pass # Failed plain YYYYMMDD, fall through to error
+
+        # --- If none of the formats matched ---
+        raise ValueError(f"Unsupported or invalid timestamp format encountered: '{timestamp_str}'")
+
+    # Dummy method to simulate usage within the class context if needed for testing
+    def standardize_data(self, data, folder_name):
+        # Example usage if this method were part of the class:
+        # data['timestamp'] = data['timestamp'].apply(self.standardize_timestamp)
+        pass
     def text_to_integer_encoding(self, text: str) -> int:
         text = str(text)
         # Use SHA-256 to ensure deterministic output
