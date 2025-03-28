@@ -1,4 +1,6 @@
-name: Data Pipeline 2
+      
+# .github/workflows/data_pipeline.yml
+name: Data Pipeline 2 (with Monitoring)
 
 on:
   workflow_dispatch: # Allows manual triggering from GitHub UI
@@ -6,56 +8,82 @@ on:
     - cron: '0 0 * * *' # Runs daily at midnight UTC
 
 jobs:
-  run-data-pipeline:
+  monitor-runner-stats:
     runs-on: ubuntu-latest
-
     permissions:
-      contents: write  # Grants write access to the repository contents
+      contents: read
 
     steps:
+      - name: Trigger Monitoring Workflow
+        uses: ./.github/workflows/monitor_workflow.yml # Path to the reusable workflow file
+        with:
+          main_run_id: ${{ github.run_id }}
+          b2_bucket: ${{ secrets.B2_BUCKET }}
+          # Optional: Override default monitoring duration/interval if needed
+          # collection_duration_seconds: 600
+          # sample_interval_seconds: 5
+          # Optional: If you want a prefix before logs/infra/, uncomment and pass it:
+          # b2_bucket_path: 'my-prefix'
+        secrets:
+          b2_key_id: ${{ secrets.B2_KEY_ID }}
+          b2_password: ${{ secrets.B2_PASSWORD }}
+          b2_endpoint_url: ${{ secrets.B2_ENDPOINT_URL }} # Ensure this line exists and matches the secret name
+
+  run-data-pipeline:
+    # needs: monitor-runner-stats # Uncomment if pipeline should wait for monitoring
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      # ... (Checkout code step) ...
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
-          ref: sql-integration  # Specify the integration branch
+          ref: sql-integration
 
+      # ... (Set up Python step) ...
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.10.6' # Use the version compatible with your code
+          python-version: '3.10.6'
 
+      # ... (Install system dependencies step) ...
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install libpq-dev
+          sudo apt-get install -y libpq-dev
 
+      # ... (Install dependencies step) ...
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r continente_price_tracker/requirements.txt
 
+      # ... (Create .env file step - ENSURE B2_ENDPOINT_URL is NOT needed here unless your python scripts use it) ...
       - name: Create .env file
         run: |
           echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" >> continente_price_tracker/.env
-          echo "USER=${{ secrets.USER }}" >> continente_price_tracker/.env
-          echo "PASSWORD=${{ secrets.PASSWORD }}" >> continente_price_tracker/.env
-          echo "HOST=${{ secrets.HOST }}" >> continente_price_tracker/.env
-
-          echo "SUPABASE_ACCESS_KEY_ID=${{ secrets.SUPABASE_ACCESS_KEY_ID }}" >> continente_price_tracker/.env
-          echo "SUPABASE_SECRET_ACCESS_KEY=${{ secrets.SUPABASE_SECRET_ACCESS_KEY }}" >> continente_price_tracker/.env
-          echo "SUPABASE_ENDPOINT=${{ secrets.SUPABASE_ENDPOINT }}" >> continente_price_tracker/.env
-          echo "SUPABASE_REGION=${{ secrets.SUPABASE_REGION }}" >> continente_price_tracker/.env
-          echo "SUPABASE_BUCKET_NAME=${{ secrets.SUPABASE_BUCKET_NAME }}" >> continente_price_tracker/.env
-            # Adding B2 variables
+          # ... (other secrets for your python scripts) ...
           echo "B2_KEY_ID=${{ secrets.B2_KEY_ID }}" >> continente_price_tracker/.env
           echo "B2_PASSWORD=${{ secrets.B2_PASSWORD }}" >> continente_price_tracker/.env
           echo "B2_BUCKET=${{ secrets.B2_BUCKET }}" >> continente_price_tracker/.env
+          # Add B2_ENDPOINT_URL here ONLY if main_concurrency.py or others need the S3 endpoint
+          # echo "B2_ENDPOINT_URL=${{ secrets.B2_ENDPOINT_URL }}" >> continente_price_tracker/.env
 
-      - name: Run data pipeline
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB }}
+      # ... (Run data pipeline scripts step) ...
+      - name: Run data pipeline scripts
+        # env:
+          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          echo "Starting main data pipeline execution..."
           if python continente_price_tracker/src/object_storage/main_concurrency.py; then
+            echo "Main concurrency script succeeded. Running subsequent scripts."
             python continente_price_tracker/src/db/upload_from_b2.py
             python continente_price_tracker/src/db/augmentation_main.py
+          else
+            echo "Main concurrency script failed. Skipping subsequent scripts."
+            exit 1
           fi
 
+    
