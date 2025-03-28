@@ -1,26 +1,21 @@
 # .github/workflows/data_pipeline.yml
-name: Data Pipeline 2 (Single Job with Monitoring)
+name: Data Pipeline 2 (Single Job with Dynamic Monitoring)
 
 on:
-  workflow_dispatch: # Allows manual triggering from GitHub UI
+  workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *' # Runs daily at midnight UTC
+    - cron: '0 0 * * *'
 
-# Environment variables available to the job
 env:
   # --- Monitoring Parameters ---
-  COLLECTION_DURATION_SECONDS: 300 # <<< Adjust: How long to monitor (e.g., 600 for 10 min)
+  # DURATION is now dynamic, determined by pipeline runtime
   SAMPLE_INTERVAL_SECONDS: 10    # <<< Adjust: How often to sample stats
-  # B2 details for monitoring upload defined in secrets below
 
 jobs:
   run-pipeline-and-monitor:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # For checkout and potentially committing results if needed
-
-    # Define secrets needed by the job
-    # secrets: inherit # Alternative: if secrets are defined at org/repo level for all workflows
+      contents: write
 
     steps:
       - name: Checkout code
@@ -36,7 +31,7 @@ jobs:
       - name: Install system dependencies and AWS CLI
         run: |
           sudo apt-get update
-          sudo apt-get install -y libpq-dev awscli # Install both system deps and awscli
+          sudo apt-get install -y libpq-dev awscli
 
       - name: Install Python dependencies
         run: |
@@ -54,13 +49,11 @@ jobs:
           echo "SUPABASE_ENDPOINT=${{ secrets.SUPABASE_ENDPOINT }}" >> continente_price_tracker/.env
           echo "SUPABASE_REGION=${{ secrets.SUPABASE_REGION }}" >> continente_price_tracker/.env
           echo "SUPABASE_BUCKET_NAME=${{ secrets.SUPABASE_BUCKET_NAME }}" >> continente_price_tracker/.env
-          # B2 creds for pipeline scripts (if needed) AND for monitoring upload
           echo "B2_KEY_ID=${{ secrets.B2_KEY_ID }}" >> continente_price_tracker/.env
           echo "B2_PASSWORD=${{ secrets.B2_PASSWORD }}" >> continente_price_tracker/.env
           echo "B2_BUCKET=${{ secrets.B2_BUCKET }}" >> continente_price_tracker/.env
           # Add endpoint only if python scripts need it via .env
           # echo "B2_ENDPOINT_URL=${{ secrets.B2_ENDPOINT_URL }}" >> continente_price_tracker/.env
-        # Note: Monitoring script reads B2 creds via aws configure step below
 
       - name: Configure AWS CLI for Backblaze B2 (for monitoring upload)
         env:
@@ -71,138 +64,191 @@ jobs:
           aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
           aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
 
-      - name: Run Pipeline in Background & Monitor in Foreground
+      - name: Run Pipeline in Background & Monitor Dynamically
         id: run_and_monitor
-        # Pass B2 details needed specifically for the upload part via env for this step
         env:
           B2_BUCKET_NAME: ${{ secrets.B2_BUCKET }}
-          B2_ENDPOINT_URL: ${{ secrets.B2_ENDPOINT_URL }} # Needed for upload later
+          B2_ENDPOINT_URL: ${{ secrets.B2_ENDPOINT_URL }}
           MAIN_WORKFLOW_RUN_ID: ${{ github.run_id }}
-          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # If python scripts need it
+          # SAMPLE_INTERVAL_SECONDS is inherited from top-level env
         run: |
           echo "Starting main data pipeline script(s) in background..."
-          # Execute the pipeline logic. If the first script fails, subsequent ones won't run.
-          # Runs within a subshell `()` so `wait` works correctly.
+          # Run pipeline in background subshell
           (python continente_price_tracker/src/object_storage/main_concurrency.py && \
            python continente_price_tracker/src/db/upload_from_b2.py && \
            python continente_price_tracker/src/db/augmentation_main.py) &
 
-          # Capture the Process ID (PID) of the background pipeline process
-          PIPELINE_PID=$!
+          # Capture the PID and export it for the Python script
+          export PIPELINE_PID=$!
           echo "Pipeline running in background with PID: $PIPELINE_PID"
+          if [ -z "$PIPELINE_PID" ]; then
+            echo "Error: Failed to get background pipeline PID."
+            exit 1
+          fi
 
-          echo "Starting monitoring script in foreground..."
-          # Run the monitoring script. It will collect stats for COLLECTION_DURATION_SECONDS
-          # The script reads duration/interval/run_id from top-level env vars
-          # It outputs results to stats_output.json
+          echo "Starting dynamic monitoring script in foreground..."
+          # Run the monitoring script. It will run until PIPELINE_PID disappears.
           python - <<EOF > stats_output.json
           import subprocess, json, time, datetime, statistics, collections, re, os
 
-          DURATION = int(os.getenv('COLLECTION_DURATION_SECONDS', 300))
+          # Get PID to monitor from environment variable
+          pipeline_pid_to_monitor = int(os.getenv('PIPELINE_PID', -1))
           INTERVAL = int(os.getenv('SAMPLE_INTERVAL_SECONDS', 10))
           MAIN_RUN_ID = os.getenv('MAIN_WORKFLOW_RUN_ID', 'unknown_run')
-          NUM_SAMPLES = DURATION // INTERVAL
 
           container_data = collections.defaultdict(lambda: {'cpu_readings': [], 'mem_readings_mib': [], 'timestamps': []})
           start_time = time.time()
-          end_time = start_time + DURATION
           actual_samples = 0
 
           print(f"Monitoring Run ID: {MAIN_RUN_ID}")
-          print(f"Collecting docker stats for {DURATION} seconds, sampling every {INTERVAL} seconds (max {NUM_SAMPLES} samples).")
+          if pipeline_pid_to_monitor <= 0:
+              print("Error: Invalid or missing PIPELINE_PID. Cannot monitor dynamically.")
+              # Optionally: Fallback to timed monitoring or exit with error
+              # For now, we'll just create an empty stats file after this print
+              final_stats = {"error": "Invalid PIPELINE_PID"}
+          else:
+              print(f"Dynamically monitoring docker stats while pipeline PID {pipeline_pid_to_monitor} runs.")
+              print(f"Sampling every {INTERVAL} seconds.")
 
-          while time.time() < end_time:
-              loop_start_time = time.time()
-              current_sample_time = datetime.datetime.utcnow().isoformat() + "Z"
-              actual_samples += 1
-              try:
-                  result = subprocess.run(
-                      ['docker', 'stats', '--no-stream', '--format', '{{json .}}'],
-                      capture_output=True, text=True, check=True, timeout=INTERVAL - 1
-                  )
-                  for line in result.stdout.strip().split('\n'):
-                      if not line: continue
-                      try:
-                          stats = json.loads(line)
-                          container_id = stats.get("ID") or stats.get("Container")
-                          if not container_id: continue
-                          cpu_perc = float(stats.get("CPUPerc", "0.0%").replace('%', ''))
-                          mem_usage_str = stats.get("MemUsage", "0MiB / 0MiB").split('/')[0].strip()
-                          mem_mib = 0.0
-                          match = re.match(r"([\d\.]+)([a-zA-Z]+)", mem_usage_str)
-                          if match:
-                              value = float(match.group(1)); unit = match.group(2).lower()
-                              if unit == 'kib': mem_mib = value / 1024.0
-                              elif unit == 'mib': mem_mib = value
-                              elif unit == 'gib': mem_mib = value * 1024.0
-                              elif unit == 'tib': mem_mib = value * 1024.0 * 1024.0
-                              elif unit == 'b': mem_mib = value / (1024.0 * 1024.0)
-                          container_data[container_id]['name'] = stats.get("Name", "unknown")
-                          container_data[container_id]['cpu_readings'].append(cpu_perc)
-                          container_data[container_id]['mem_readings_mib'].append(mem_mib)
-                          container_data[container_id]['timestamps'].append(current_sample_time)
-                      except Exception as e: print(f"Warning: Error processing line '{line}': {e}")
-              except subprocess.TimeoutExpired: print("Warning: 'docker stats' command timed out.")
-              except subprocess.CalledProcessError as e:
-                  if "Cannot connect" in e.stderr or "Is the docker daemon running?" in e.stderr: print("Error: Docker daemon not running."); break
-                  elif not container_data: print("Info: No running containers or 'docker stats' empty.")
-                  else: print(f"Warning: 'docker stats' failed: {e.stderr}")
-              except Exception as e: print(f"Unexpected error during collection: {e}")
-              elapsed_in_loop = time.time() - loop_start_time
-              sleep_time = max(0, INTERVAL - elapsed_in_loop)
-              if time.time() + sleep_time < end_time: time.sleep(sleep_time)
-              else: break
-          collection_end_time = time.time()
-          print(f"Collected {actual_samples} samples over {collection_end_time - start_time:.2f} seconds.")
-          final_stats = {
-              "monitoring_target_run_id": MAIN_RUN_ID,
-              "collection_start_utc": datetime.datetime.utcfromtimestamp(start_time).isoformat() + "Z",
-              "collection_end_utc": datetime.datetime.utcfromtimestamp(collection_end_time).isoformat() + "Z",
-              "collection_duration_seconds": round(collection_end_time - start_time, 2),
-              "requested_duration_seconds": DURATION, "sample_interval_seconds": INTERVAL,
-              "samples_taken": actual_samples, "containers": []
-          }
-          for cid, data in container_data.items():
-              if not data['cpu_readings']: continue
-              cpu, mem = data['cpu_readings'], data['mem_readings_mib']
-              final_stats["containers"].append({
-                  "container_id": cid, "container_name": data['name'], "samples_collected": len(cpu),
-                  "cpu_percentage": {"max": round(max(cpu),2) if cpu else 0, "median": round(statistics.median(cpu),2) if cpu else 0, "average": round(statistics.mean(cpu),2) if cpu else 0, "min": round(min(cpu),2) if cpu else 0},
-                  "memory_mib": {"max": round(max(mem),2) if mem else 0, "median": round(statistics.median(mem),2) if mem else 0, "average": round(statistics.mean(mem),2) if mem else 0, "min": round(min(mem),2) if mem else 0},
-              })
+              while True:
+                  # --- Check if the pipeline process still exists ---
+                  try:
+                      # os.kill(pid, 0) checks if process exists without sending a signal
+                      os.kill(pipeline_pid_to_monitor, 0)
+                      process_exists = True
+                  except ProcessLookupError:
+                      # PID does not exist (process finished)
+                      print(f"Pipeline process PID {pipeline_pid_to_monitor} no longer exists. Stopping monitoring.")
+                      process_exists = False
+                      break # Exit the monitoring loop
+                  except PermissionError:
+                      # Shouldn't happen often in Actions, but handle it
+                      print(f"Warning: Permission error checking PID {pipeline_pid_to_monitor}. Assuming it still exists.")
+                      process_exists = True # Continue monitoring
+                  except Exception as e:
+                      print(f"Unexpected error checking PID {pipeline_pid_to_monitor}: {e}. Stopping monitoring.")
+                      process_exists = False
+                      break # Safety break
+
+                  # --- Collect Stats if process exists ---
+                  loop_start_time = time.time()
+                  current_sample_time = datetime.datetime.utcnow().isoformat() + "Z"
+                  actual_samples += 1
+                  try:
+                      # Get docker stats snapshot
+                      result = subprocess.run(
+                          ['docker', 'stats', '--no-stream', '--format', '{{json .}}'],
+                          capture_output=True, text=True, check=True, timeout=INTERVAL - 1
+                      )
+                      # Process stats (same as before)
+                      for line in result.stdout.strip().split('\n'):
+                         if not line: continue
+                         try:
+                             stats = json.loads(line)
+                             container_id = stats.get("ID") or stats.get("Container")
+                             if not container_id: continue
+                             cpu_perc = float(stats.get("CPUPerc", "0.0%").replace('%', ''))
+                             mem_usage_str = stats.get("MemUsage", "0MiB / 0MiB").split('/')[0].strip()
+                             mem_mib = 0.0
+                             match = re.match(r"([\d\.]+)([a-zA-Z]+)", mem_usage_str)
+                             if match:
+                                 value = float(match.group(1)); unit = match.group(2).lower()
+                                 if unit == 'kib': mem_mib = value / 1024.0
+                                 elif unit == 'mib': mem_mib = value
+                                 elif unit == 'gib': mem_mib = value * 1024.0
+                                 elif unit == 'tib': mem_mib = value * 1024.0 * 1024.0
+                                 elif unit == 'b': mem_mib = value / (1024.0 * 1024.0)
+                             container_data[container_id]['name'] = stats.get("Name", "unknown")
+                             container_data[container_id]['cpu_readings'].append(cpu_perc)
+                             container_data[container_id]['mem_readings_mib'].append(mem_mib)
+                             container_data[container_id]['timestamps'].append(current_sample_time)
+                         except Exception as e: print(f"Warning: Error processing line '{line}': {e}")
+
+                  except subprocess.TimeoutExpired: print("Warning: 'docker stats' command timed out during sample.")
+                  except subprocess.CalledProcessError as e:
+                      if "Cannot connect" in e.stderr or "Is the docker daemon running?" in e.stderr: print("Error: Docker daemon not running. Stopping monitoring."); break
+                      # Don't print 'No running containers' every time if it's empty briefly
+                      elif 'docker stats' in e.stderr and not container_data and actual_samples < 5: pass # Suppress early 'no container' warnings
+                      elif 'docker stats' in e.stderr: print("Info: No running containers detected during this sample or 'docker stats' empty.")
+                      else: print(f"Warning: 'docker stats' failed: {e.stderr}")
+                  except Exception as e: print(f"Unexpected error during stats collection: {e}")
+
+                  # --- Sleep until next interval ---
+                  elapsed_in_loop = time.time() - loop_start_time
+                  sleep_time = max(0, INTERVAL - elapsed_in_loop)
+                  time.sleep(sleep_time)
+                  # Loop continues based on PID check at the start
+
+              # --- Monitoring loop finished ---
+              collection_end_time = time.time()
+              actual_duration = round(collection_end_time - start_time, 2)
+              print(f"Monitoring finished. Collected {actual_samples} samples over {actual_duration:.2f} seconds.")
+
+              # --- Aggregate Statistics ---
+              final_stats = {
+                  "monitoring_target_run_id": MAIN_RUN_ID,
+                  "monitoring_target_pid": pipeline_pid_to_monitor,
+                  "collection_start_utc": datetime.datetime.utcfromtimestamp(start_time).isoformat() + "Z",
+                  "collection_end_utc": datetime.datetime.utcfromtimestamp(collection_end_time).isoformat() + "Z",
+                  "collection_duration_seconds": actual_duration,
+                  # "requested_duration_seconds": "Dynamic (linked to PID)", # Removed fixed duration
+                  "sample_interval_seconds": INTERVAL,
+                  "samples_taken": actual_samples,
+                  "containers": []
+              }
+              for cid, data in container_data.items():
+                  if not data['cpu_readings']: continue
+                  cpu, mem = data['cpu_readings'], data['mem_readings_mib']
+                  final_stats["containers"].append({
+                      "container_id": cid, "container_name": data['name'], "samples_collected": len(cpu),
+                      "cpu_percentage": {"max": round(max(cpu),2) if cpu else 0, "median": round(statistics.median(cpu),2) if cpu else 0, "average": round(statistics.mean(cpu),2) if cpu else 0, "min": round(min(cpu),2) if cpu else 0},
+                      "memory_mib": {"max": round(max(mem),2) if mem else 0, "median": round(statistics.median(mem),2) if mem else 0, "average": round(statistics.mean(mem),2) if mem else 0, "min": round(min(mem),2) if mem else 0},
+                  })
+
+          # Print the final JSON stats to the file
           print(json.dumps(final_stats, indent=2))
           EOF
           echo "Monitoring script finished. Stats saved to stats_output.json"
 
-          # Now, wait for the background pipeline process to finish
+          # Wait for the background pipeline process to *actually* finish
+          # This ensures the step only completes after the pipeline is done AND
+          # it allows us to capture the pipeline's true exit code.
           echo "Waiting for background pipeline process (PID: $PIPELINE_PID) to complete..."
           wait $PIPELINE_PID
-          PIPELINE_EXIT_CODE=$? # Capture the exit code of the background process
+          PIPELINE_EXIT_CODE=$?
 
           echo "Background pipeline process finished with exit code: $PIPELINE_EXIT_CODE"
 
           # Check if the pipeline failed
           if [ $PIPELINE_EXIT_CODE -ne 0 ]; then
             echo "Error: Background pipeline process failed with exit code $PIPELINE_EXIT_CODE."
-            exit $PIPELINE_EXIT_CODE # Fail this entire step with the same exit code
+            # Output the stats file content for debugging even on failure
+            echo "--- Monitoring Stats (Pipeline Failed) ---"
+            cat stats_output.json || echo "Could not read stats_output.json"
+            echo "--- End Monitoring Stats ---"
+            exit $PIPELINE_EXIT_CODE
           fi
 
           echo "Pipeline process completed successfully."
-          # Set an output flag if needed for subsequent steps
           echo "pipeline_completed=true" >> $GITHUB_OUTPUT
 
       - name: Upload Monitoring Stats to Backblaze B2
         # This step only runs if the previous step (run_and_monitor) succeeded
         env:
-           # These are needed again specifically for the aws s3 cp command
            AWS_ENDPOINT_URL: ${{ secrets.B2_ENDPOINT_URL }}
            B2_BUCKET_NAME: ${{ secrets.B2_BUCKET }}
            MAIN_WORKFLOW_RUN_ID: ${{ github.run_id }}
         run: |
           OUTPUT_FILE="stats_output.json"
           if [ ! -s $OUTPUT_FILE ]; then
-            echo "Warning: Stats output file is empty or does not exist. Skipping upload."
-            exit 0 # Exit successfully, maybe monitoring failed but pipeline was ok
+            echo "Warning: Stats output file is empty or does not exist (maybe PID was invalid?). Skipping upload."
+            exit 0
+          fi
+          # Check if the stats file contains an error message (e.g., invalid PID)
+          if grep -q '"error":' "$OUTPUT_FILE"; then
+             echo "Warning: Stats file contains an error message. Skipping upload."
+             cat "$OUTPUT_FILE" # Print the error for logs
+             exit 0
           fi
 
           CURRENT_DATE=$(date -u +'%Y-%m-%d')
@@ -218,6 +264,5 @@ jobs:
             echo "Monitoring stats upload successful."
           else
             echo "Error: Monitoring stats upload failed."
-            # Decide if upload failure should fail the whole job
-            # exit 1 # Uncomment to fail the job if upload fails
+            # exit 1 # Optionally fail job if upload fails
           fi
