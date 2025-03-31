@@ -1,0 +1,37 @@
+return canonical data schema
+
+      
+# Canonical Product Staging Schema Definition
+
+**Version:** 1.2 (Refined based on examples)
+**Date:** YYYY-MM-DD
+
+## Purpose
+
+Defines the standard structure for product data as output by the initial scraping and mapping pipeline (Processed Staging Layer). This schema aims for consistency in core fields while explicitly accommodating heterogeneity in less structured or source-specific data (like categories, URLs, extra attributes) as extracted directly from the source. This minimizes complex transformation logic in the initial pipeline, enhancing robustness. Complex normalization, feature extraction, and final schema shaping should occur in downstream processes using this staged data.
+
+## Schema Fields
+
+| Field Name              | Data Type                 | Mandatory | Description & Rules                                                                                                                                                                | Example (Illustrative)         |
+| :---------------------- | :------------------------ | :-------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------- |
+| **`product_id`**        | `str`                     | Yes       | Unique identifier for the product within the source context. Extracted via `parser_config`, should be made unique *per source*.                                                    | `"7459183"`                    |
+| **`source_product_id`** | `str`                     | Yes       | The original product ID/SKU as assigned by the source website. Preserved for reference.                                                                                           | `"P-7459183-AU"` or `"7130167"` |
+| **`product_name`**      | `str`                     | Yes       | Product name/title. Basic cleaning (e.g., whitespace trim) applied during parsing is acceptable.                                                                                  | `"Leite UHT Meio Gordo"`       |
+| **`brand`**             | `str`                     | No        | Brand name, as extracted. Null if not found. *Downstream processing may normalize further.*                                                                                     | `"Mimosa"` or `"Happy Bear"`   |
+| **`price_current`**     | `float`                   | No        | Current selling price (inc. tax, if applicable per source convention). Type conversion attempted by parser. Null if unavailable.                                               | `1.09` or `18.39`            |
+| **`price_regular`**     | `float`                   | No        | Regular/original price if a discount is active and this is available. Null otherwise.                                                                                            | `1.25`                         |
+| **`currency`**          | `str`                     | Yes       | Currency code (ISO 4217). Should be standardized during mapping (e.g., always "EUR" for these sources).                                                                         | `"EUR"`                        |
+| `price_unit_str`        | `str`                     | No        | Raw string representing price per unit as displayed on the source (e.g., "€18,39/un", "€1.09/L"). Null if not present. *Downstream processing parses this.*                   | `"€18,39/un"` or `"1.09€/L"`  |
+| `unit_quantity_str`     | `str`                     | No        | Raw string representing the quantity/size of the product unit (e.g., "1 un", "800 g", "Pack 6"). Null if not present. *Downstream processing parses this.*                  | `"1 un"` or `"800 g"`        |
+| `category_raw`          | `str`                     | No        | The original, unparsed category representation from the source (e.g., hierarchical string, JSON string, slug). Stored for robustness and downstream parsing.                 | `"Bebé/Alimentação..."` or `"pingo-doce-lacticinios"` |
+| `category_list`         | `list[str]`               | No        | If categories are directly parsed as a list (e.g., from breadcrumbs), store here. Null otherwise.                                                                                | `["Alimentação", "Congelados"]`|
+| `category_l1`           | `str`                     | No        | If a distinct L1 category field is directly parseable. Null otherwise.                                                                                                          | `"Alimentação"`                |
+| `category_l2`           | `str`                     | No        | If a distinct L2 category field is directly parseable. Null otherwise.                                                                                                          | `"Congelados"`                 |
+| `category_l3`           | `str`                     | No        | If a distinct L3 category field is directly parseable. Null otherwise.                                                                                                          | `"Peixe"`                      |
+| **`product_url`**       | `str`                     | Yes       | Absolute URL to the main product page on the source website. Must be a valid URL.                                                                                               | `"https://..."`                |
+| `product_urls_raw`      | `str`                     | No        | If the source embeds multiple related URLs (e.g., API calls, quick view) often in a JSON string within an attribute, store the raw string here. Null otherwise.            | `"{\"productUrl\":\"/...\"}"`   |
+| `image_urls`            | `list[str]`               | No        | List of absolute image URLs extracted. Can be empty list `[]`.                                                                                                                  | `["https://.../img1.jpg"]`     |
+| **`source`**            | `str`                     | Yes       | Predefined, unique identifier for the data source (e.g., "auchan", "pingodoce", "continente"). Added by the framework/mapper.                                                 | `"continente"`                 |
+| **`scraped_timestamp`** | `str (ISO 8601)`          | Yes       | UTC timestamp when the data scraping for this item occurred, in ISO 8601 format (`YYYY-MM-DDTHH:MM:SSZ`). Added and formatted by the framework/mapper.                       | `"2023-10-27T10:30:00Z"`      |
+| `is_available`          | `bool`                    | No        | Availability status, if directly extractable (`true`/`false`). Null if unknown or cannot be reliably determined from the source page.                                      | `true`                         |
+| `attributes_raw`        | `dict[str, Union[str, float, int, bool, list, dict]]` | No  | Catch-all dictionary for other potentially useful structured or semi-structured data extracted via `parser_config` that doesn't fit standard fields (e.g., promotions, ratings JSON, source-specific flags like `cgid`). *Requires downstream interpretation.* | `{"promo": null, "ppu": "€18,39/un", "min_qty": "1 un", "source_cgid": "bebe"}` |
