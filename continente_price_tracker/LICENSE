@@ -1,1 +1,193 @@
+USE [MFSYSDB]
+GO
 
+/*****************************************************************************************************************
+** Object:  View [dbo].[GRUPO_DAMM_JOIN0059_miguel_dev]
+**
+** Purpose: Provides a consolidated view of production planning data, joining planning information with product details,
+**          Bill of Materials (BOM), and performing various validation checks against MES and E80 configurations.
+**          It calculates an `IS_VALIDATED` flag (NULL/0/1) and a descriptive `IS_VALIDATED_DESC` message.
+**
+** Change History:
+** Date         Author                          INC/CR#         Description
+** ----------   ------------------------------  ------------    --------------------------------------------------------------
+** 2024-09-30   Salvador Sancho                 DAMM-24.047.V01 Ampliar consulta campo IS_VALIDATED MES_PRODUCTION_PLANNING
+** 2024-10-17   Salvador Sancho                 INC0354449      Se optimiza item_process_link y se corrigen las condiciones LIKE '%-M' y LIKE '%-1'.
+** 2024-11-15   miguel.b.silva@accenture.com    INCXXXXXXX      Replaced original IS_VALIDATED_DESC messages with more detailed, dynamic descriptions based on failure reason.
+** 2024-11-15   miguel.b.silva@accenture.com    INCXXXXXXX      Made E80 SKU check conditional based on specific lines (Later removed based on reference data).
+** 2024-11-15   miguel.b.silva@accenture.com    INCXXXXXXX      Addressed scenario causing NULL output using ISNULL in DESC messages.
+** 2024-11-15   miguel.b.silva@accenture.com    INCXXXXXXX      Fixed IS_VALIDATED_DESC truncation by explicitly CASTing the CASE expression result.
+** 2024-11-18   miguel.b.silva@accenture.com    INCXXXXXXX      Removed Debug Flags. Corrected logic for IS_VALIDATED (allow NULL) and IS_VALIDATED_DESC
+**                                                              to prioritize E80 SKU check and handle NULL from final LGV query correctly,
+**                                                              matching reference output behavior. Removed line check from E80 DESC message. Finalized dynamic messages.
+** 2024-11-19   miguel.b.silva@accenture.com    INCXXXXXXX      Corrected syntax errors (extra parenthesis, potential CAST issue).
+*****************************************************************************************************************/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+CREATE OR ALTER VIEW [dbo].[GRUPO_DAMM_JOIN0059_miguel_dev]
+AS
+	WITH PU AS  (
+		-- Selects relevant Production Units and their SAP Aliases for filtering planning data
+		SELECT MPU.PRODUCTION_UNIT_CODE, MPU.ALIAS_SAP
+        FROM SODWVPRTMFSYS1P.MFSYSDB.MDL.PRODUCTION_UNIT	AS MPU
+        INNER JOIN SODWVPRTMFSYS1P.MFSYSDB.MDL.AREA				AS MA
+			ON MA.AREA_CODE = MPU.AREA_CODE
+        INNER JOIN SODWVPRTMFSYS1P.MFSYSDB.MDL.FACTORY			AS MF
+			ON MF.FACTORY_CODE = MA.FACTORY_CODE
+		WHERE MF.FACTORY_CODE IN ('ELE', 'PRT') -- Filter for specific factories
+		AND MPU.ALIAS_SAP IS NOT NULL
+		AND MPU.ALIAS_SAP <> 'NULL'
+	)
+	,PLANNING AS (
+		-- Selects recent, visible Production Planning Work Orders
+		SELECT ID_ORD_PRO, MATNR, ARBPL, MENGE, MES_VISIBLE, MES_WO_STATE, [STATUS], FECHAI, FECHAF, MES_SYNC_STATE
+			,SAP_INITIAL_QUANTITY, MES_QUANTITY, MES_START_DATETIME, MES_END_DATETIME, MES_COMMENTS, MES_PROCESS
+			,MES_PROCESS_PHOTO, SECUENCIA, COMEN, CODIFICADO, PASTEUR, PU.PRODUCTION_UNIT_CODE
+		FROM SODWVPRTMFSYS1P.MFSYSDB.WO.CON_PRODUCTION_PLANNING AS CP -- Alias added for clarity
+		INNER JOIN PU ON PU.ALIAS_SAP = LEFT(CP.ARBPL, 2) -- Join based on first 2 chars of Work Center (line/train)
+		WHERE CP.MENGE >= 0
+		AND CP.MES_VISIBLE = 1
+        AND (CP.ID_ORD_PRO LIKE '%-1' OR CP.ID_ORD_PRO LIKE '%-M') -- Filter specific order types
+		AND CP.PRODUCTION_DATE > DATEADD(MONTH, -3, GETDATE()) -- Look back 3 months
+	)
+	,item_process_link AS (
+		-- Retrieves distinct item-process links from MES, filtered by relevant Production Units and Items from PLANNING & BOM
+        -- Optimization applied (JOINs moved here)
+		SELECT DISTINCT IPL.ITEM_ID COLLATE Modern_Spanish_CI_AS ITEM_ID, LEFT(IPL.PROCESS_ID, 12) COLLATE Modern_Spanish_CI_AS PROCESS_ID
+		FROM [LS_MESPROD].[MESDB].[DBO].[item_process_link] AS IPL WITH(NOLOCK)
+		INNER JOIN PU
+			ON PU.PRODUCTION_UNIT_CODE = LEFT(IPL.PROCESS_ID, 12) COLLATE Modern_Spanish_CI_AS
+		INNER JOIN PLANNING
+			ON PLANNING.MATNR = IPL.ITEM_ID COLLATE Modern_Spanish_CI_AS
+            AND PLANNING.PRODUCTION_UNIT_CODE = LEFT(IPL.PROCESS_ID, 12) COLLATE Modern_Spanish_CI_AS -- Ensure link matches the planning record's unit
+		-- No need to join BOM here again, as PLANNING is already filtered implicitly by the final join in the main query
+	)
+	,oper_item_spec AS (
+        -- Retrieves distinct item class (family) and process ID suffix (work center) from MES oper_item_spec
+		SELECT DISTINCT OIS.item_class_id COLLATE Modern_Spanish_CI_AS item_class_id, SUBSTRING(OIS.process_id, 11, 2) COLLATE Modern_Spanish_CI_AS process_id
+		FROM [LS_MESPROD].[MESDB].[dbo].[oper_item_spec] AS OIS WITH(NOLOCK)
+        -- No need for further joins here, will be used in main query checks
+	)
+	,FAMILIA_MAQUINA_RUTA_STATUS AS (
+        -- Retrieves active family/train combinations from MFSYSDB config
+		SELECT DISTINCT SUBSTRING(FMRS.TREN, 5, 2) COLLATE Modern_Spanish_CI_AS TREN, FMRS.FAMILIA COLLATE Modern_Spanish_CI_AS FAMILIA
+		FROM SODWVPRTMFSYS1P.MFSYSDB.MES.FAMILIA_MAQUINA_RUTA_STATUS AS FMRS
+		WHERE FMRS.[STATUS] = 1 -- Only active combinations
+	)
+    ,bom_item_parents AS (
+        -- Retrieves distinct parent item IDs from MES BOM table
+        SELECT DISTINCT BIP.parent_item_id COLLATE Modern_Spanish_CI_AS parent_item_id
+        FROM [LS_MESPROD].[MESDB].[dbo].[bom_item] AS BIP WITH(NOLOCK)
+        WHERE BIP.ITEM_ID <> BIP.PARENT_ITEM_ID -- Ensure it's a parent definition, not self-reference
+    )
+    ,e80_skus AS (
+        -- Combined list of SKUs known to E80 systems (LGV and SDM)
+        SELECT SKU FROM SODWVPRTMFSYS1P.MFSYSDB.LGV.MFSYS_SDM_ART_LB
+        UNION -- Use UNION to get distinct SKUs
+        SELECT SKU FROM SODWVPRTMFSYS1P.MFSYSDB.SKU.SDM_ART
+    )
+
+		SELECT	PLANNING.ID_ORD_PRO								AS PLANNING_ID_ORD_PRO,
+				PLANNING.PRODUCTION_UNIT_CODE					AS PRODUCTION_UNIT_CODE,
+				PLANNING.MATNR									AS PLANNING_MATNR,
+				PLANNING.ARBPL									AS PLANNING_ARBPL,
+
+				-- IS_VALIDATED: NULL (Not found in E80 final check), 0 (Failed validation), 1 (Validated OK)
+				CASE
+					-- First check: Does the product exist in E80 views? If not, skip further MES checks for validation status.
+                    WHEN NOT EXISTS (SELECT 1 FROM e80_skus WHERE SKU = PRODUCT.MATNR) THEN
+                        0 -- Considered invalid if not in E80 source views (Requirement 1)
+
+                    -- Second Check: Does the product have a BOM in MES?
+                    WHEN NOT EXISTS (SELECT 1 FROM bom_item_parents WHERE parent_item_id = PRODUCT.MATNR) THEN
+                        0 -- Considered invalid if no BOM parent entry (Requirement 2)
+
+                    -- Third Check: Does the product have a family?
+					WHEN ISNULL(product.ZZFAMILIA,'') = '' THEN
+                        0 -- Considered invalid if no family assigned (Requirement 3)
+
+                    -- Proceed with detailed MES/Config checks only if E80/BOM/Family checks pass
+				    ELSE
+				        CASE
+				            -- Check 4: Family Speed Exists
+				            WHEN NOT EXISTS(SELECT 1 FROM SODWVPRTMFSYS1P.MFSYSDB.MES.MST_FAMILY_SPEED WHERE FAMILY_CODE = product.ZZFAMILIA) THEN 0
+                            -- Check 5: Route Exists
+							WHEN NOT EXISTS(SELECT 1 FROM item_process_link WHERE ITEM_ID = PLANNING.MATNR AND PROCESS_ID = PLANNING.PRODUCTION_UNIT_CODE) THEN 0
+                            -- Check 6: Correct Route Count (Max 1 unless specific lines)
+							WHEN (SELECT COUNT(*) FROM item_process_link WHERE ITEM_ID = PLANNING.MATNR AND PROCESS_ID = PLANNING.PRODUCTION_UNIT_CODE) > 1 AND PLANNING.PRODUCTION_UNIT_CODE NOT IN ('PRTENVTREN17','ELEENVTREN32') THEN 0
+                            -- Check 7: Family configured for Work Center in MES
+							WHEN NOT EXISTS(SELECT 1 FROM oper_item_spec WHERE item_class_id = PRODUCT.ZZFAMILIA AND process_id = PLANNING.ARBPL) THEN 0
+                            -- Check 8: Family/Train combination is active
+							WHEN NOT EXISTS(SELECT 1 FROM FAMILIA_MAQUINA_RUTA_STATUS WHERE TREN = PLANNING.ARBPL AND FAMILIA = PRODUCT.ZZFAMILIA ) THEN 0 -- Corrected: Removed extra parenthesis
+				            -- All previous checks passed, now check the final E80 LGV validation status
+				            ELSE
+								-- Final check against LGV; returns NULL if SKU not found in LGV (shouldn't happen due to initial e80_skus check, but handles edge cases).
+								(SELECT CASE WHEN LGV.IS_VALIDATED = 0 THEN 0 ELSE 1 END
+								 FROM SODWVPRTMFSYS1P.MFSYSDB.LGV.MFSYS_SDM_ART_LB LGV where SKU = PRODUCT.MATNR)
+						END
+				END AS IS_VALIDATED, -- Comma separates columns
+
+                -- IS_VALIDATED_DESC: Provides detailed reason for the validation status. CAST to prevent truncation.
+                CAST(
+				    CASE
+					    -- Reason 1: SKU Not Found in E80 Views (Highest Priority)
+					    WHEN NOT EXISTS (SELECT 1 FROM e80_skus WHERE SKU = PRODUCT.MATNR) THEN
+                             'E80 Check: SKU ' + ISNULL(PRODUCT.MATNR,'???') + ' not found in E80 source views (LGV.MFSYS_SDM_ART_LB / SKU.SDM_ART). Investigate views or product status (MMSTA).'
+
+					    -- Reason 2: BOM Not Found in MESDB
+					    WHEN NOT EXISTS (SELECT 1 FROM bom_item_parents WHERE parent_item_id = PRODUCT.MATNR) THEN
+                             'MES Check: Product ' + ISNULL(PLANNING.MATNR, 'UNKNOWN') + ' does not have a Bill of Materials (BOM) defined as a parent item in MESDB (bom_item). Verify the BOM load process.'
+
+                        -- Reason 3: No Family Assigned
+					    WHEN ISNULL(product.ZZFAMILIA,'') = '' THEN
+                             'Product Check: Product ' + ISNULL(PLANNING.MATNR, 'UNKNOWN') + ' has no family assigned in the Product Master (SKU.MST_PRODUCT.ZZFAMILIA). Review product master data.'
+
+                        -- If E80/BOM/Family OK, proceed to detailed checks
+                        ELSE
+                            CASE
+							    -- Reason 4: No Family Speed Configured
+							    WHEN NOT EXISTS(SELECT 1 FROM SODWVPRTMFSYS1P.MFSYSDB.MES.MST_FAMILY_SPEED WHERE FAMILY_CODE = product.ZZFAMILIA) THEN
+                                     'Config Check: The family (' + ISNULL(product.ZZFAMILIA, 'NULL') + ') of product ' + ISNULL(PLANNING.MATNR, 'UNKNOWN') + ' does not have a SPEED (standard speed) assigned in the configuration (MES.MST_FAMILY_SPEED). Review family configuration.'
+							    -- Reason 5: No Route (Item-Process Link) Found in MES
+                                WHEN NOT EXISTS(SELECT 1 FROM item_process_link WHERE ITEM_ID = PLANNING.MATNR AND PROCESS_ID = PLANNING.PRODUCTION_UNIT_CODE) THEN
+                                     'MES Check: Product ' + ISNULL(PLANNING.MATNR, 'UNKNOWN') + ' does not have a process (route) defined for Production Unit ' + ISNULL(PLANNING.PRODUCTION_UNIT_CODE,'UNKNOWN') + ' in MESDB (item_process_link). Verify route configuration.'
+							    -- Reason 6: Multiple Routes Found for Non-Special Lines
+                                WHEN (SELECT COUNT(*) FROM item_process_link WHERE ITEM_ID = PLANNING.MATNR AND PROCESS_ID = PLANNING.PRODUCTION_UNIT_CODE) > 1 AND PLANNING.PRODUCTION_UNIT_CODE NOT IN ('PRTENVTREN17','ELEENVTREN32') THEN
+                                     'MES Check: Product ' + ISNULL(PLANNING.MATNR, 'UNKNOWN') + ' has more than one route assigned in MESDB for Production Unit ' + ISNULL(PLANNING.PRODUCTION_UNIT_CODE, 'UNKNOWN') + '. This is only allowed on PRTENVTREN17 and ELEENVTREN32. Review/correct duplicate or incorrect routes.'
+							    -- Reason 7: Family Not Configured for Work Center in MES (oper_item_spec)
+                                WHEN NOT EXISTS(SELECT 1 FROM oper_item_spec WHERE item_class_id = PRODUCT.ZZFAMILIA AND process_id = PLANNING.ARBPL) THEN
+                                     'MES Check: The family (' + ISNULL(product.ZZFAMILIA, 'NULL') + ') of product ' + ISNULL(PLANNING.MATNR, 'UNKNOWN') + ' is not configured to run on work center ' + ISNULL(PLANNING.ARBPL, 'UNKNOWN') + ' in MES (oper_item_spec). Verify family configuration per line.'
+							    -- Reason 8: Family/Train Combination Not Active/Configured
+                                WHEN NOT EXISTS(SELECT 1 FROM FAMILIA_MAQUINA_RUTA_STATUS WHERE TREN = PLANNING.ARBPL AND FAMILIA = PRODUCT.ZZFAMILIA) THEN -- Corrected: Removed extra parenthesis
+                                     'Config Check: The Family (' + ISNULL(product.ZZFAMILIA, 'NULL') + ')/Work Center (' + ISNULL(PLANNING.ARBPL, 'UNKNOWN') + ') combination for product ' + ISNULL(PLANNING.MATNR, 'UNKNOWN') + ' is not active/configured in MFSYSDB (MES.FAMILIA_MAQUINA_RUTA_STATUS). Verify status and configuration.'
+
+							    -- If all above checks passed, check final LGV status for description
+							    ELSE
+								    -- Wrap the subquery in ISNULL specifically for the description.
+								    ISNULL( (SELECT CASE
+													    WHEN LGV.IS_VALIDATED = 1 THEN 'Validation OK' -- Reason 10: Actual Success
+													    ELSE 'E80 Final Check: ' + ISNULL(LGV.IS_VALIDATED_DESC, 'Validation failed in E80 (LGV.MFSYS_SDM_ART_LB), reason not specified.') -- Reason 9: Failure description from LGV
+												     END
+											    FROM SODWVPRTMFSYS1P.MFSYSDB.LGV.MFSYS_SDM_ART_LB LGV where SKU = PRODUCT.MATNR),
+											-- Reason 11 (Implicit): Fallback if SKU not found in LGV *at this stage* (should be caught earlier, but handles edge cases where IS_VALIDATED becomes NULL)
+											'E80 Final Check: Product ' + ISNULL(PLANNING.MATNR, 'UNKNOWN') + ' passed initial checks but was not found in E80 Validation View (LGV.MFSYS_SDM_ART_LB) for final status check.'
+										  ) -- End ISNULL
+						    END -- End Inner CASE for detailed checks
+				    END -- End Outer CASE for IS_VALIDATED_DESC
+                AS VARCHAR(500) -- Specify Type for CAST
+                ) -- End CAST
+                AS IS_VALIDATED_DESC -- Alias
+
+		FROM PLANNING
+		INNER JOIN BILL_OF_MATERIALS_GRUPO_DAMM		AS BOM -- Assuming this view joins Planning's MATNR/ARBPL correctly to find BOM components if needed, but here used mainly to link Planning to Product
+			ON PLANNING.MATNR = BOM.MATNR
+			AND PLANNING.ARBPL = LEFT(BOM.ARBPL, 2) -- Join based on Product and Line/Train
+        INNER JOIN SODWVPRTMFSYS1P.MFSYSDB.SKU.MST_PRODUCT AS PRODUCT
+			ON BOM.MATNR = PRODUCT.MATNR -- Join to get product master data like ZZFAMILIA
+
+GO

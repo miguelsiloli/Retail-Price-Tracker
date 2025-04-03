@@ -1,8 +1,4 @@
-Okay, let's review and refine the test suites, categorizing them into essential and optional, removing any clear redundancy, and providing simple explanations.
 
-**Core Principle:** Essential tests cover the fundamental requirements and most common scenarios/errors needed for the component to fulfill its basic purpose reliably. Optional tests cover less frequent edge cases, specific features (like CSV input if not always used), deeper error simulations, or aspects difficult to test in isolation (like perfect thread safety).
-
----
 
 ## Refined TDD Test Suites (Prioritized)
 

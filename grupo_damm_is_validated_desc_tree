@@ -1,0 +1,84 @@
+// GRUPO_DAMM_JOIN0059 IS_VALIDATED_DESC Decision Tree
+digraph {
+	fontsize=10 rankdir=TB size="15,15"
+	node [fillcolor=lightblue fontsize=9 shape=box style="rounded,filled"]
+	start [label=START fillcolor=gray fontcolor=white shape=Mdiamond style=filled]
+	q1_e80_line [label="Is ARBPL Prefix in ('14','17','53',
+'54','11','12','15','16')?" fillcolor=lightyellow shape=diamond]
+	q1a_e80_sku [label="Is MATNR NOT IN (LGV.SKU UNION
+SDM.SKU)?" fillcolor=lightyellow shape=diamond]
+	msg1_e80_exclusion [label="Msg 1: E80 Exclusion - SKU not
+found in E80 Views for relevant
+line. (Details based on MMSTA,
+GROUP, BOM, PAL, etc.)" fillcolor=lightcoral shape=box style=filled]
+	q2_mes_bom [label="Is MATNR NOT found as Parent in
+MESDB bom_item?" fillcolor=lightyellow shape=diamond]
+	msg2_no_mes_bom [label="Msg 2: MES Check - Product has no
+Parent BOM entry in MESDB." fillcolor=lightcoral shape=box style=filled]
+	q3_has_family [label="Does Product have a Family
+(ZZFAMILIA <> '')?" fillcolor=lightyellow shape=diamond]
+	msg3_no_family [label="Msg 3: Product Check - No ZZFAMILIA
+assigned in Product Master." fillcolor=lightcoral shape=box style=filled]
+	q3a_family_speed [label="Is Family NOT in MST_FAMILY_SPEED?" fillcolor=lightyellow shape=diamond]
+	msg4_no_family_speed [label="Msg 4: Config Check - Family has no
+Speed defined." fillcolor=lightcoral shape=box style=filled]
+	q3b_mes_route [label="Is NO Route defined in
+item_process_link for
+MATNR/PROD_UNIT?" fillcolor=lightyellow shape=diamond]
+	msg5_no_mes_route [label="Msg 5: MES Check - No Process Route
+defined in MESDB." fillcolor=lightcoral shape=box style=filled]
+	q3c_multiple_routes [label="Is PROD_UNIT NOT IN
+('PRT...17','ELE...32') AND >1
+Route exists in item_process_link?" fillcolor=lightyellow shape=diamond]
+	msg6_multiple_routes [label="Msg 6: MES Check - Multiple routes
+found for non-exception Production
+Unit." fillcolor=lightcoral shape=box style=filled]
+	q3d_oper_item_spec [label="Is Family/ARBPL combination NOT in
+oper_item_spec?" fillcolor=lightyellow shape=diamond]
+	msg7_no_oper_item_spec [label="Msg 7: MES Check - Family not
+configured for this Work Center in
+MES." fillcolor=lightcoral shape=box style=filled]
+	q3e_maq_ruta_status [label="Is ARBPL/Family combination NOT
+Active in
+FAMILIA_MAQUINA_RUTA_STATUS?" fillcolor=lightyellow shape=diamond]
+	msg8_no_maq_ruta_status [label="Msg 8: Config Check - Family/Work
+Center combo not active/configured
+in MFSYSDB." fillcolor=lightcoral shape=box style=filled]
+	q3f_lgv_invalid [label="Is ARBPL Prefix in
+('14','17','53','54') AND SKU
+exists in LGV view with
+IS_VALIDATED = 0?" fillcolor=lightyellow shape=diamond]
+	msg9_lgv_invalid_desc [label="Msg 9: Validation Fail - Reason
+from LGV.IS_VALIDATED_DESC" fillcolor=lightcoral shape=box style=filled]
+	q3g_final_lgv_check [label="Final Check: SKU Status in LGV View
+(MFSYS_SDM_ART_LB)" fillcolor=whitesmoke shape=box style=filled]
+	res_validation_ok [label="Validation OK" fillcolor=lightgreen shape=box style=filled]
+	res_lgv_invalid_desc_final [label="Validation Fail - Reason from
+LGV.IS_VALIDATED_DESC (Fallback)" fillcolor=lightcoral shape=box style=filled]
+	res_lgv_sku_not_found [label="E80 LGV Check: SKU not found in
+MFSYS_SDM_ART_LB" fillcolor=lightcoral shape=box style=filled]
+	start -> q1_e80_line
+	q1_e80_line -> q1a_e80_sku [label=" YES "]
+	q1_e80_line -> q2_mes_bom [label=" NO "]
+	q1a_e80_sku -> msg1_e80_exclusion [label=" YES "]
+	q1a_e80_sku -> q2_mes_bom [label=" NO "]
+	q2_mes_bom -> msg2_no_mes_bom [label=" YES "]
+	q2_mes_bom -> q3_has_family [label=" NO "]
+	q3_has_family -> q3a_family_speed [label=" YES "]
+	q3_has_family -> msg3_no_family [label=" NO "]
+	q3a_family_speed -> msg4_no_family_speed [label=" YES "]
+	q3a_family_speed -> q3b_mes_route [label=" NO "]
+	q3b_mes_route -> msg5_no_mes_route [label=" YES "]
+	q3b_mes_route -> q3c_multiple_routes [label=" NO "]
+	q3c_multiple_routes -> msg6_multiple_routes [label=" YES "]
+	q3c_multiple_routes -> q3d_oper_item_spec [label=" NO "]
+	q3d_oper_item_spec -> msg7_no_oper_item_spec [label=" YES "]
+	q3d_oper_item_spec -> q3e_maq_ruta_status [label=" NO "]
+	q3e_maq_ruta_status -> msg8_no_maq_ruta_status [label=" YES "]
+	q3e_maq_ruta_status -> q3f_lgv_invalid [label=" NO "]
+	q3f_lgv_invalid -> msg9_lgv_invalid_desc [label=" YES "]
+	q3f_lgv_invalid -> q3g_final_lgv_check [label=" NO "]
+	q3g_final_lgv_check -> res_validation_ok [label=" IS_VALIDATED = 1 "]
+	q3g_final_lgv_check -> res_lgv_invalid_desc_final [label=" IS_VALIDATED = 0 "]
+	q3g_final_lgv_check -> res_lgv_sku_not_found [label=" SKU Not Found "]
+}
