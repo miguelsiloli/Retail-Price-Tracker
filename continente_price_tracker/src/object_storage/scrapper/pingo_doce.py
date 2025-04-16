@@ -12,7 +12,7 @@ src_path = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 sys.path.append(src_path)
 
-from utils import retry_on_failure, upload_csv_to_supabase_s3
+from utils import retry_on_failure, upload_csv_to_supabase_s3, upload_csv_to_gcs
 import time
 
 
@@ -220,6 +220,10 @@ def parse_and_save_all_categories(categories, base_path="data/raw/pingo_doce"):
                 upload_csv_to_supabase_s3(logger = logger, 
                                             file_path = file_path, 
                                             folder_name = supabase_folder)
+                
+                upload_csv_to_gcs(logger = logger, 
+                                file_path = file_path, 
+                                folder_name = supabase_folder)
             else:
                 logger.warning(f"No data found for category '{categoria}'. Skipping...")
         except Exception as e:

@@ -6,7 +6,7 @@ import pandas as pd
 import time
 import json
 from datetime import datetime
-from utils import retry_on_failure, upload_csv_to_supabase_s3
+from utils import retry_on_failure, upload_csv_to_supabase_s3, upload_csv_to_gcs
 from logger import setup_logger
 
 
@@ -297,16 +297,16 @@ def save_data_for_all_cgids(cgid_list,
                     file_path=file_path,
                     folder_name=supabase_folder
                 )
+
+                upload_csv_to_gcs(
+                    logger=logger,
+                    file_path=file_path,
+                    folder_name=supabase_folder
+                )
+
             else:
                 logger.warning(f"No data found for {cgid}. Skipping...")
         except Exception as e:
             logger.error(f"Error processing cgid {cgid}: {str(e)}", exc_info=True)
 
     logger.info("Data fetch process completed")
-
-
-# List of cgid values
-# cgid_list = [
-#     "alimentacao-", "biologico-e-escolhas-alimentares",
-#     "limpeza-da-casa-e-roupa", "bebidas-e-garrafeira", "marcas-auchan"
-# ]

@@ -7,6 +7,9 @@ from botocore.client import Config
 from dotenv import load_dotenv
 import os
 from b2sdk.v2 import *
+from google.cloud import storage
+from google.oauth2 import service_account
+import json
 
 # Load environment variables from .env file
 load_dotenv()
@@ -49,31 +52,16 @@ SUPABASE_S3_CREDENTIALS = {
 }
 
 # # S3 Client Initialization
-# s3_client = boto3.client(
-#     "s3",
-#     aws_access_key_id=SUPABASE_S3_CREDENTIALS["access_key_id"],
-#     aws_secret_access_key=SUPABASE_S3_CREDENTIALS["secret_access_key"],
-#     endpoint_url=SUPABASE_S3_CREDENTIALS["endpoint"],
-#     region_name=SUPABASE_S3_CREDENTIALS["region"],
-#     config=Config(signature_version="s3v4"),
-# )
+s3_client = boto3.client(
+    "s3",
+    aws_access_key_id=SUPABASE_S3_CREDENTIALS["access_key_id"],
+    aws_secret_access_key=SUPABASE_S3_CREDENTIALS["secret_access_key"],
+    endpoint_url=SUPABASE_S3_CREDENTIALS["endpoint"],
+    region_name=SUPABASE_S3_CREDENTIALS["region"],
+    config=Config(signature_version="s3v4"),
+)
 
-# def upload_csv_to_supabase_s3(file_path, folder_name, logger, s3_client = s3_client):
-#     """
-#     Uploads a CSV file to Supabase storage within a specified folder.
-#     Creates the folder if it does not exist.
-#     """
-#     file_name = os.path.basename(file_path)
-#     remote_path = f"{folder_name}/{file_name}"
-
-#     try:
-#         s3_client.upload_file(file_path, SUPABASE_S3_CREDENTIALS["bucket_name"], remote_path)
-#         logger.info(f"Uploaded '{file_name}' to Supabase at '{remote_path}'.")
-#     except Exception as e:
-#         logger.error(f"Failed to upload '{file_name}' to Supabase: {str(e)}", exc_info=True)
-
-
-def upload_csv_to_supabase_s3(file_path, folder_name, logger):
+def upload_csv_to_supabase_s3(file_path, folder_name, logger, s3_client = s3_client):
     """
     Uploads a CSV file to Supabase storage within a specified folder.
     Creates the folder if it does not exist.
@@ -81,19 +69,59 @@ def upload_csv_to_supabase_s3(file_path, folder_name, logger):
     file_name = os.path.basename(file_path)
     remote_path = f"{folder_name}/{file_name}"
 
-    bucket = b2_api.get_bucket_by_name(os.getenv("B2_BUCKET"))
-
-    file_info = {'Content-Type': 'text/csv'}
-
     try:
-        bucket.upload_local_file(
-            local_file=file_path,
-            file_name=remote_path,
-            file_info=file_info
-        )
-        logger.info(f"Successfully uploaded '{file_name}' to Supabase at '{remote_path}'.")
-        return True
-
+        s3_client.upload_file(file_path, SUPABASE_S3_CREDENTIALS["bucket_name"], remote_path)
+        logger.info(f"Uploaded '{file_name}' to Supabase at '{remote_path}'.")
     except Exception as e:
         logger.error(f"Failed to upload '{file_name}' to Supabase: {str(e)}", exc_info=True)
-        return False
+
+
+def upload_csv_to_gcs(file_path, folder_name, logger):
+    """
+    Uploads a CSV file to Google Cloud Storage within a specified folder.
+    Creates the folder if it does not exist.
+    
+    Args:
+        file_path (str): Path to the local CSV file
+        folder_name (str): Folder name within the bucket
+        logger: Logger object for logging status
+        
+    Returns:
+        bool: True if upload successful, False otherwise
+    """
+    # Get GCS bucket name from environment variable
+    gcs_bucket_name = os.getenv("GCS_BUCKET_NAME")
+    
+    # Create credentials dictionary from environment variables
+    credentials_dict = {
+        "type": os.getenv("TYPE"),
+        "project_id": os.getenv("PROJECT_ID"),
+        "private_key_id": os.getenv("PRIVATE_KEY_ID"),
+        "private_key": os.getenv("PRIVATE_KEY"),
+        "client_email": os.getenv("CLIENT_EMAIL"),
+        "client_id": os.getenv("CLIENT_ID"),
+        "auth_uri": os.getenv("AUTH_URI"),
+        "token_uri": os.getenv("TOKEN_URI"),
+        "auth_provider_x509_cert_url": os.getenv("AUTH_PROVIDER_X509_CERT_URL"),
+        "client_x509_cert_url": os.getenv("CLIENT_X509_CERT_URL"),
+        "universe_domain": os.getenv("UNIVERSE_DOMAIN")
+    }
+    
+    # Create credentials object from dictionary
+    credentials = service_account.Credentials.from_service_account_info(credentials_dict)
+    
+    # Initialize GCS client with credentials
+    storage_client = storage.Client(credentials=credentials, project=os.getenv("GCP_PROJECT_ID"))
+    bucket = storage_client.bucket(gcs_bucket_name)
+    
+    # Prepare file name and remote path
+    file_name = os.path.basename(file_path)
+    remote_path = f"{folder_name}/{file_name}"
+    
+    # Create blob and upload file
+    blob = bucket.blob(remote_path)
+    blob.upload_from_filename(file_path, content_type='text/csv')
+    
+    logger.info(f"Successfully uploaded '{file_name}' to GCS at '{remote_path}'.")
+    return True
+        

@@ -17,6 +17,7 @@ wheel
 setuptools 
 requests
 b2sdk
+google-cloud-storage
 
 # backwards compatibility
 pathlib2

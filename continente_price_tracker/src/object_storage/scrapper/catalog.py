@@ -6,7 +6,7 @@ import re
 import time
 import random
 from datetime import datetime
-from utils import retry_on_failure, upload_csv_to_supabase_s3
+from utils import retry_on_failure, upload_csv_to_supabase_s3, upload_csv_to_gcs
 import os
 from logger import setup_logger
 
@@ -245,6 +245,10 @@ def process_and_save_categories(base_path="data/raw/continente"):
                     file_path=file_path,
                     folder_name=supabase_folder
                 )
+
+                upload_csv_to_gcs(logger = logger, 
+                                file_path = file_path, 
+                                folder_name = supabase_folder)
             else:
                 logger.warning(f"No data found for category {category}.")
         except Exception as e:
