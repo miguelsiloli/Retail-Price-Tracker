@@ -217,9 +217,9 @@ def parse_and_save_all_categories(categories, base_path="data/raw/pingo_doce"):
                 logger.info(f"Saved data for category '{categoria}' to '{file_path}'. Total products: {len(all_products_df)}")
 
                 # Upload to Supabase
-                upload_csv_to_supabase_s3(logger = logger, 
-                                            file_path = file_path, 
-                                            folder_name = supabase_folder)
+                # upload_csv_to_supabase_s3(logger = logger, 
+                #                             file_path = file_path, 
+                #                             folder_name = supabase_folder)
                 
                 upload_csv_to_gcs(logger = logger, 
                                 file_path = file_path, 
