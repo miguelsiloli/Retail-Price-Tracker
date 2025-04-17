@@ -230,15 +230,3 @@ def parse_and_save_all_categories(categories, base_path="data/raw/pingo_doce"):
             logger.error(f"Error processing category {categoria}: {str(e)}", exc_info=True)
 
     logger.info("Completed parsing and saving data for all categories")
-
-
-if __name__ == "__main__":
-    # Example usage
-    categories = [
-        "pingo-doce-lacticinios", "pingo-doce-bebidas",
-        "pingo-doce-frescos-embalados", "pingo-doce-higiene-e-beleza",
-        "pingo-doce-maquinas-e-capsulas-de-cafe", "pingo-doce-mercearia",
-        "pingo-doce-refeicoes-prontas", "pingo-doce-cozinha-e-limpeza", "pingo-doce-congelados"
-    ]
-
-    parse_and_save_all_categories(categories)

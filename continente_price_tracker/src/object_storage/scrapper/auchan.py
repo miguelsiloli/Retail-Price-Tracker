@@ -292,11 +292,11 @@ def save_data_for_all_cgids(cgid_list,
                 logger.info(f"Data for {cgid} saved to {file_path}")
 
                 # Upload to Supabase
-                upload_csv_to_supabase_s3(
-                    logger=logger,
-                    file_path=file_path,
-                    folder_name=supabase_folder
-                )
+                # upload_csv_to_supabase_s3(
+                #     logger=logger,
+                #     file_path=file_path,
+                #     folder_name=supabase_folder
+                # )
 
                 upload_csv_to_gcs(
                     logger=logger,
