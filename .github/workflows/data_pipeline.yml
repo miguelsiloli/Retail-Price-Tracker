@@ -58,7 +58,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB }}
         run: |
-          if python continente_price_tracker/src/object_storage/main.py;
+          python continente_price_tracker/src/object_storage/main.py
       - name: Commit and push CSV files
         if: success()
         run: |
