@@ -27,25 +27,25 @@ jobs:
           pip install -r continente_price_tracker/requirements.txt
       - name: Create .env file
         run: |
-          echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" >> .env
-          echo "USER=${{ secrets.USER }}" >> .env
-          echo "PASSWORD=${{ secrets.PASSWORD }}" >> .env
-          echo "HOST=${{ secrets.HOST }}" >> .env
-          echo "TYPE=${{ secrets.TYPE }}" >> .env
-          echo "PROJECT_ID=${{ secrets.PROJECT_ID }}" >> .env
-          echo "PRIVATE_KEY_ID=${{ secrets.PRIVATE_KEY_ID }}" >> .env
-          echo "PRIVATE_KEY=${{ secrets.PRIVATE_KEY }}" >> .env
-          echo "CLIENT_EMAIL=${{ secrets.CLIENT_EMAIL }}" >> .env
-          echo "CLIENT_ID=${{ secrets.CLIENT_ID }}" >> .env
-          echo "AUTH_URI=${{ secrets.AUTH_URI }}" >> .env
-          echo "TOKEN_URI=${{ secrets.TOKEN_URI }}" >> .env
-          echo "AUTH_PROVIDER_X509_CERT_URL=${{ secrets.AUTH_PROVIDER_X509_CERT_URL }}" >> .env
-          echo "CLIENT_X509_CERT_URL=${{ secrets.CLIENT_X509_CERT_URL }}" >> .env
-          echo "UNIVERSE_DOMAIN=${{ secrets.UNIVERSE_DOMAIN }}" >> .env
-          echo "GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}" >> .env
-          echo "GCP_REGION=${{ secrets.GCP_REGION }}" >> .env
-          echo "GCS_BUCKET_NAME=${{ secrets.GCS_BUCKET_NAME }}" >> .env
-          echo "GCS_SUBFOLDER_PATH=${{ secrets.GCS_SUBFOLDER_PATH }}" >> .env
+          echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" >> continente_price_tracker/.env
+          echo "USER=${{ secrets.USER }}" >> continente_price_tracker/.env
+          echo "PASSWORD=${{ secrets.PASSWORD }}" >> continente_price_tracker/.env
+          echo "HOST=${{ secrets.HOST }}" >> continente_price_tracker/.env
+          echo "TYPE=${{ secrets.TYPE }}" >> continente_price_tracker/.env
+          echo "PROJECT_ID=${{ secrets.PROJECT_ID }}" >> continente_price_tracker/.env
+          echo "PRIVATE_KEY_ID=${{ secrets.PRIVATE_KEY_ID }}" >> continente_price_tracker/.env
+          echo "PRIVATE_KEY=${{ secrets.PRIVATE_KEY }}" >> continente_price_tracker/.env
+          echo "CLIENT_EMAIL=${{ secrets.CLIENT_EMAIL }}" >> continente_price_tracker/.env
+          echo "CLIENT_ID=${{ secrets.CLIENT_ID }}" >> continente_price_tracker/.env
+          echo "AUTH_URI=${{ secrets.AUTH_URI }}" >> continente_price_tracker/.env
+          echo "TOKEN_URI=${{ secrets.TOKEN_URI }}" >> continente_price_tracker/.env
+          echo "AUTH_PROVIDER_X509_CERT_URL=${{ secrets.AUTH_PROVIDER_X509_CERT_URL }}" >> continente_price_tracker/.env
+          echo "CLIENT_X509_CERT_URL=${{ secrets.CLIENT_X509_CERT_URL }}" >> continente_price_tracker/.env
+          echo "UNIVERSE_DOMAIN=${{ secrets.UNIVERSE_DOMAIN }}" >> continente_price_tracker/.env
+          echo "GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}" >> continente_price_tracker/.env
+          echo "GCP_REGION=${{ secrets.GCP_REGION }}" >> continente_price_tracker/.env
+          echo "GCS_BUCKET_NAME=${{ secrets.GCS_BUCKET_NAME }}" >> continente_price_tracker/.env
+          echo "GCS_SUBFOLDER_PATH=${{ secrets.GCS_SUBFOLDER_PATH }}" >> continente_price_tracker/.env
           echo "SUPABASE_ACCESS_KEY_ID=${{ secrets.SUPABASE_ACCESS_KEY_ID }}" >> continente_price_tracker/.env
           echo "SUPABASE_SECRET_ACCESS_KEY=${{ secrets.SUPABASE_SECRET_ACCESS_KEY }}" >> continente_price_tracker/.env
           echo "SUPABASE_ENDPOINT=${{ secrets.SUPABASE_ENDPOINT }}" >> continente_price_tracker/.env

@@ -76,7 +76,7 @@ def upload_csv_to_supabase_s3(file_path, folder_name, logger, s3_client = s3_cli
         logger.error(f"Failed to upload '{file_name}' to Supabase: {str(e)}", exc_info=True)
 
 
-def upload_csv_to_gcs(file_path, folder_name, logger):
+def upload_csv_to_gcs(file_path, folder_name, logger, gcs_bucket_name, credentials_dict):
     """
     Uploads a CSV file to Google Cloud Storage within a specified folder.
     Creates the folder if it does not exist.
@@ -89,23 +89,6 @@ def upload_csv_to_gcs(file_path, folder_name, logger):
     Returns:
         bool: True if upload successful, False otherwise
     """
-    # Get GCS bucket name from environment variable
-    gcs_bucket_name = os.getenv("GCS_BUCKET_NAME")
-    
-    # Create credentials dictionary from environment variables
-    credentials_dict = {
-        "type": os.getenv("TYPE"),
-        "project_id": os.getenv("PROJECT_ID"),
-        "private_key_id": os.getenv("PRIVATE_KEY_ID"),
-        "private_key": os.getenv("PRIVATE_KEY"),
-        "client_email": os.getenv("CLIENT_EMAIL"),
-        "client_id": os.getenv("CLIENT_ID"),
-        "auth_uri": os.getenv("AUTH_URI"),
-        "token_uri": os.getenv("TOKEN_URI"),
-        "auth_provider_x509_cert_url": os.getenv("AUTH_PROVIDER_X509_CERT_URL"),
-        "client_x509_cert_url": os.getenv("CLIENT_X509_CERT_URL"),
-        "universe_domain": os.getenv("UNIVERSE_DOMAIN")
-    }
     
     # Create credentials object from dictionary
     credentials = service_account.Credentials.from_service_account_info(credentials_dict)

@@ -197,6 +197,24 @@ def parse_and_save_all_categories(categories, base_path="data/raw/pingo_doce"):
     """
     logger.info(f"Starting to parse and save data for {len(categories)} categories")
 
+    # Get GCS bucket name from environment variable
+    gcs_bucket_name = os.getenv("GCS_BUCKET_NAME")
+    
+    # Create credentials dictionary from environment variables
+    credentials_dict = {
+        "type": os.getenv("TYPE"),
+        "project_id": os.getenv("PROJECT_ID"),
+        "private_key_id": os.getenv("PRIVATE_KEY_ID"),
+        "private_key": os.getenv("PRIVATE_KEY"),
+        "client_email": os.getenv("CLIENT_EMAIL"),
+        "client_id": os.getenv("CLIENT_ID"),
+        "auth_uri": os.getenv("AUTH_URI"),
+        "token_uri": os.getenv("TOKEN_URI"),
+        "auth_provider_x509_cert_url": os.getenv("AUTH_PROVIDER_X509_CERT_URL"),
+        "client_x509_cert_url": os.getenv("CLIENT_X509_CERT_URL"),
+        "universe_domain": os.getenv("UNIVERSE_DOMAIN")
+    }
+
     base_path = base_path + "/" + datetime.now().strftime("%Y%m%d")
 
     if not os.path.exists(base_path):
@@ -223,7 +241,9 @@ def parse_and_save_all_categories(categories, base_path="data/raw/pingo_doce"):
                 
                 upload_csv_to_gcs(logger = logger, 
                                 file_path = file_path, 
-                                folder_name = supabase_folder)
+                                folder_name = supabase_folder,
+                                gcs_bucket_name=gcs_bucket_name,
+                                credentials_dict=credentials_dict)
             else:
                 logger.warning(f"No data found for category '{categoria}'. Skipping...")
         except Exception as e:

@@ -199,6 +199,24 @@ def fetch_all_products_for_category(cgid, sz=216, pmin="0.01", srule="FRESH-Peix
     return df
 
 def process_and_save_categories(base_path="data/raw/continente"):
+    # Get GCS bucket name from environment variable
+    gcs_bucket_name = os.getenv("GCS_BUCKET_NAME")
+    
+    # Create credentials dictionary from environment variables
+    credentials_dict = {
+        "type": os.getenv("TYPE"),
+        "project_id": os.getenv("PROJECT_ID"),
+        "private_key_id": os.getenv("PRIVATE_KEY_ID"),
+        "private_key": os.getenv("PRIVATE_KEY"),
+        "client_email": os.getenv("CLIENT_EMAIL"),
+        "client_id": os.getenv("CLIENT_ID"),
+        "auth_uri": os.getenv("AUTH_URI"),
+        "token_uri": os.getenv("TOKEN_URI"),
+        "auth_provider_x509_cert_url": os.getenv("AUTH_PROVIDER_X509_CERT_URL"),
+        "client_x509_cert_url": os.getenv("CLIENT_X509_CERT_URL"),
+        "universe_domain": os.getenv("UNIVERSE_DOMAIN")
+    }
+
     logger.info("Starting process_and_save_categories")
 
     # Base URL to make requests (could be useful for fetching pages etc.)
@@ -248,7 +266,9 @@ def process_and_save_categories(base_path="data/raw/continente"):
 
                 upload_csv_to_gcs(logger = logger, 
                                 file_path = file_path, 
-                                folder_name = supabase_folder)
+                                folder_name = supabase_folder,
+                                gcs_bucket_name=gcs_bucket_name,
+                                credentials_dict=credentials_dict)
             else:
                 logger.warning(f"No data found for category {category}.")
         except Exception as e:
