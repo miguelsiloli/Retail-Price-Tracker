@@ -54,6 +54,12 @@ jobs:
           echo "B2_KEY_ID=${{ secrets.B2_KEY_ID }}" >> continente_price_tracker/.env
           echo "B2_PASSWORD=${{ secrets.B2_PASSWORD }}" >> continente_price_tracker/.env
           echo "B2_BUCKET=${{ secrets.B2_BUCKET }}" >> continente_price_tracker/.env
+          echo "PREFECT_RESULTS_PERSISTENCE_STORAGE_BLOCK_BUCKET_PATH=${{ secrets.PREFECT_RESULTS_PERSISTENCE_STORAGE_BLOCK_BUCKET_PATH }}" >> .env
+      
+  
+          # --- Prefect Configuration (Tells the client running here where the API server is) ---
+          echo "PREFECT_API_URL=${{ secrets.PREFECT_API_URL }}" >> continente_price_tracker/.env
+          echo "PREFECT_API_KEY=${{ secrets.PREFECT_API_KEY }}" >> continente_price_tracker/.env
       - name: Run data pipeline and upload
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB }}

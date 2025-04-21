@@ -23,3 +23,4 @@ google-cloud-storage
 pathlib2
 psycopg2-binary
 dotenv
+psycopg

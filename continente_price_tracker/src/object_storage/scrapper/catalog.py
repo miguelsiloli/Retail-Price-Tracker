@@ -9,8 +9,11 @@ from datetime import datetime
 from utils import retry_on_failure, upload_csv_to_supabase_s3, upload_csv_to_gcs
 import os
 from logger import setup_logger
+from prefect import flow, task
+import prefect
 
 
+@task
 def parse_total_products(html_content):
     # Parse the HTML content
     soup = BeautifulSoup(html_content, 'html.parser')
@@ -34,6 +37,7 @@ def parse_total_products(html_content):
     return None
 
 
+@task
 def parse_product_data(html_content, cgid):
     # Parse the HTML content
     soup = BeautifulSoup(html_content, 'html.parser')
@@ -110,6 +114,7 @@ def parse_product_data(html_content, cgid):
 # Function to fetch a page of products with caching and retry behavior
 # @lru_cache(maxsize=None)
 @retry_on_failure(retries=3, delay=120)
+@task
 def fetch_page(start, sz, cgid, pmin, srule):
     url = "https://www.continente.pt/on/demandware.store/Sites-continente-Site/default/Search-UpdateGrid"
     headers = {
@@ -155,6 +160,7 @@ def fetch_page(start, sz, cgid, pmin, srule):
 logger = setup_logger("logs/continente_scraper.log")
 
 # @retry_on_failure(retries=3, delay=360)
+@task
 def fetch_all_products_for_category(cgid, sz=216, pmin="0.01", srule="FRESH-Peixaria"):
     logger.info(f"Starting to fetch products for category: {cgid}")
     products = []
@@ -198,6 +204,7 @@ def fetch_all_products_for_category(cgid, sz=216, pmin="0.01", srule="FRESH-Peix
     logger.info(f"Completed fetching products for category {cgid}. Total products: {len(df)}")
     return df
 
+@flow
 def process_and_save_categories(base_path="data/raw/continente"):
     # Get GCS bucket name from environment variable
     gcs_bucket_name = os.getenv("GCS_BUCKET_NAME")
@@ -207,7 +214,7 @@ def process_and_save_categories(base_path="data/raw/continente"):
         "type": os.getenv("TYPE"),
         "project_id": os.getenv("PROJECT_ID"),
         "private_key_id": os.getenv("PRIVATE_KEY_ID"),
-        "private_key": os.getenv("PRIVATE_KEY"),
+        "private_key": os.getenv("PRIVATE_KEY").replace("\\n", "\n") if os.getenv("PRIVATE_KEY") else None,
         "client_email": os.getenv("CLIENT_EMAIL"),
         "client_id": os.getenv("CLIENT_ID"),
         "auth_uri": os.getenv("AUTH_URI"),
@@ -216,6 +223,12 @@ def process_and_save_categories(base_path="data/raw/continente"):
         "client_x509_cert_url": os.getenv("CLIENT_X509_CERT_URL"),
         "universe_domain": os.getenv("UNIVERSE_DOMAIN")
     }
+
+    # Check if running within a Prefect context
+    if prefect.context.get("flow_run_id"):
+        logger.info("Running within Prefect flow")
+    else:
+        logger.info("Running as a standalone script")
 
     logger.info("Starting process_and_save_categories")
 
@@ -264,14 +277,18 @@ def process_and_save_categories(base_path="data/raw/continente"):
                 #     folder_name=supabase_folder
                 # )
 
-                upload_csv_to_gcs(logger = logger, 
-                                file_path = file_path, 
-                                folder_name = supabase_folder,
-                                gcs_bucket_name=gcs_bucket_name,
-                                credentials_dict=credentials_dict)
+                upload_csv_to_gcs(logger = logger,
+                                 file_path = file_path,
+                                 folder_name = supabase_folder,
+                                 gcs_bucket_name=gcs_bucket_name,
+                                 credentials_dict=credentials_dict)
             else:
                 logger.warning(f"No data found for category {category}.")
         except Exception as e:
             logger.error(f"Error processing category {category}: {str(e)}", exc_info=True)
 
     logger.info("Completed process_and_save_categories")
+
+# Add a conditional block to run the flow if the script is executed directly
+if __name__ == "__main__":
+    process_and_save_categories()

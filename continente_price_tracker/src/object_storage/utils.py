@@ -12,15 +12,15 @@ from google.oauth2 import service_account
 import json
 
 # Load environment variables from .env file
-load_dotenv()
+# load_dotenv()
 
-info = InMemoryAccountInfo()
-b2_api = B2Api(info)
-b2_api.authorize_account(
-    "production",
-    os.getenv("B2_KEY_ID"),
-    os.getenv("B2_PASSWORD")
-)
+# info = InMemoryAccountInfo()
+# b2_api = B2Api(info)
+# b2_api.authorize_account(
+#     "production",
+#     os.getenv("B2_KEY_ID"),
+#     os.getenv("B2_PASSWORD")
+# )
 
 
 def retry_on_failure(retries=3, delay=60):
