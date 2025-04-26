@@ -7,5 +7,5 @@ dashboard
 raw
 data
 continente_price_tracker/src/object_storage/catalog_v2_runner.py
-continente_price_tracker/src/object_storage/scrapper/catalog_v2.py
+#continente_price_tracker/src/object_storage/scrapper/catalog_v2.py
 retail_data/

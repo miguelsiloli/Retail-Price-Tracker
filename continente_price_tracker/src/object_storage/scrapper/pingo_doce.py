@@ -285,8 +285,6 @@ def parse_and_save_all_categories(categories, base_path="data/raw/pingo_doce"):
         logger.info(f"Created directory: {base_path}")
 
     supabase_folder = f"retail_data/pingo_doce/{datetime.now().strftime('%Y%m%d')}"
-    base_data_path = os.getenv("GCS_SUBFOLDER_PATH", "data/raw/continente") # Default local path
-    base_data_path = os.path.join(base_data_path, "pingo_doce")
 
     for categoria in categories:
         logger.info(f"Processing category: {categoria}")

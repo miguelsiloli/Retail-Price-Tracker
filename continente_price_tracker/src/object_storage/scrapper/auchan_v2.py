@@ -450,7 +450,7 @@ def auchan_scraper_flow(
     # Define GCS folder structure (using supabase naming convention as requested)
     # Use a timestamp without time for the folder name if preferred for daily structure
     daily_timestamp = datetime.now().strftime("%Y%m%d")
-    gcs_target_folder = f"raw/auchan/{daily_timestamp}"
+    gcs_target_folder = f"retail_data/auchan/{daily_timestamp}"
     logger.info(f"Data will be uploaded to GCS bucket '{gcs_bucket_name}' in folder '{gcs_target_folder}'")
 
     # --- Execute Tasks ---
